@@ -40,7 +40,7 @@ const Home: NextPage = () => {
               <h3 className="text-2xl font-bold">Documentation →</h3>
               <div className="text-lg">
                 Learn more about Create T3 App, the libraries it uses, and how
-                to deploy it.
+                to deploy it.s
               </div>
             </Link>
           </div>
@@ -63,7 +63,7 @@ const AuthShowcase: React.FC = () => {
 
   const { data: secretMessage } = trpc.auth.getSecretMessage.useQuery(
     undefined, // no input
-    { enabled: sessionData?.user !== undefined },
+    { enabled: sessionData?.user !== undefined }
   );
 
   return (
