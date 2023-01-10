@@ -1,10 +1,20 @@
 import { type NextPage } from "next";
-import Head from "next/head";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
 import { convertToRaw, EditorState } from "draft-js";
-
+const draftToMarkdown = dynamic(
+  () => import("draftjs-to-markdown").then((mod) => mod.draftToMarkdown),
+  { ssr: false }
+);
+const draftToHtml = dynamic(
+  () => import("draftjs-to-html").then((mod) => mod.draftToMarkdown),
+  { ssr: false }
+);
+const htmlToDraft = dynamic(
+  () => import("html-to-draftjs").then((mod) => mod.draftToMarkdown),
+  { ssr: false }
+);
 const Editor = dynamic(
   () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
   { ssr: false }
@@ -43,7 +53,11 @@ const Home: NextPage = () => {
       keywords: inputValues.keywords,
     });
   };
-  console.log({ editorState: convertToRaw(editorState.getCurrentContent()) });
+  const rawContentState = convertToRaw(editorState.getCurrentContent());
+  const markdown = draftToMarkdown(rawContentState);
+  console.log({
+    hello: draftToHtml(convertToRaw(editorState.getCurrentContent())),
+  });
 
   return (
     <div>
@@ -54,15 +68,10 @@ const Home: NextPage = () => {
           editorState={editorState}
           onEditorStateChange={onEditorStateChange}
           editorClassName="bg-white h-96 "
-          // i want to change the options of the toolbar
-          toolbar={{
-            inline: { inDropdown: true },
-            list: { inDropdown: true },
-            textAlign: { inDropdown: true },
-            link: { inDropdown: true },
-            history: { inDropdown: true },
-            // lets add different headings
-          }}
+        />
+        <textarea
+          disabled
+          value={draftToHtml(convertToRaw(editorState.getCurrentContent()))}
         />
 
         {/* <form

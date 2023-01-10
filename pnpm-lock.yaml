@@ -20,8 +20,11 @@ specifiers:
   '@typescript-eslint/parser': ^5.33.0
   autoprefixer: ^10.4.7
   draft-js: ^0.11.7
+  draftjs-to-html: ^0.9.1
+  draftjs-to-markdown: ^0.6.0
   eslint: ^8.26.0
   eslint-config-next: 13.1.1
+  html-to-draftjs: ^1.5.0
   next: 13.1.1
   next-auth: ^4.18.3
   postcss: ^8.4.14
@@ -47,6 +50,9 @@ dependencies:
   '@trpc/react-query': 10.8.1_krdvppocpp5g6rpv2pnlhwexoi
   '@trpc/server': 10.8.1
   draft-js: 0.11.7_biqbaboplfbrettd7655fr4n2y
+  draftjs-to-html: 0.9.1
+  draftjs-to-markdown: 0.6.0
+  html-to-draftjs: 1.5.0_draft-js@0.11.7
   next: 13.1.1_biqbaboplfbrettd7655fr4n2y
   next-auth: 4.18.8_q76c2b4vyoegvsbrcwkfvimnai
   react: 18.2.0
@@ -1108,6 +1114,14 @@ packages:
       react-dom: 18.2.0_react@18.2.0
     transitivePeerDependencies:
       - encoding
+    dev: false
+
+  /draftjs-to-html/0.9.1:
+    resolution: {integrity: sha512-fFstE6+IayaVFBEvaFt/wN8vdj8FsTRzij7dy7LI9QIwf5LgfHFi9zSpvCg+feJ2tbYVqHxUkjcibwpsTpgFVQ==}
+    dev: false
+
+  /draftjs-to-markdown/0.6.0:
+    resolution: {integrity: sha512-nmze89CrGOQCzPLd16i2hYpmVyQhZnZuIuuLK7SCuGCRCYTPSnf6PE2f9ONcvjT357G+yEdEQh3K3Ry5cNVMcQ==}
     dev: false
 
   /draftjs-utils/0.10.2_draft-js@0.11.7:
