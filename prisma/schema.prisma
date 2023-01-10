@@ -3,11 +3,10 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
-
 
 model Example {
   id        String   @id @default(cuid())
@@ -16,19 +15,22 @@ model Example {
 }
 
 model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                       String  @id @default(cuid())
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String?
+  access_token             String?
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String?
+  session_state            String?
+  oauth_token_secret       String?
+  oauth_token              String?
+  refresh_token_expires_in Int?
+  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -47,8 +49,34 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  isAdmin       Boolean   @default(false)
   accounts      Account[]
-  sessions      Session[]
+  Comment       Comment[]
+  Post          Post[]
+  Session       Session[]
+}
+
+model Post {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  title     String
+  keywords  String[]
+  text      String
+  userId    String
+  Comment   Comment[]
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  text      String
+  userId    String
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {

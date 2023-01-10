@@ -21,6 +21,9 @@ CREATE TABLE "Account" (
     "scope" TEXT,
     "id_token" TEXT,
     "session_state" TEXT,
+    "oauth_token_secret" TEXT,
+    "oauth_token" TEXT,
+    "refresh_token_expires_in" INTEGER,
 
     CONSTRAINT "Account_pkey" PRIMARY KEY ("id")
 );
@@ -42,8 +45,34 @@ CREATE TABLE "User" (
     "email" TEXT,
     "emailVerified" TIMESTAMP(3),
     "image" TEXT,
+    "isAdmin" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Post" (
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "title" TEXT NOT NULL,
+    "keywords" TEXT[],
+    "text" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+
+    CONSTRAINT "Post_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Comment" (
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "text" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "postId" TEXT NOT NULL,
+
+    CONSTRAINT "Comment_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -73,3 +102,12 @@ ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId"
 
 -- AddForeignKey
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Post" ADD CONSTRAINT "Post_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Comment" ADD CONSTRAINT "Comment_postId_fkey" FOREIGN KEY ("postId") REFERENCES "Post"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Comment" ADD CONSTRAINT "Comment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

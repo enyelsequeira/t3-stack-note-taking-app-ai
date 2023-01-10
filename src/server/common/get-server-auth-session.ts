@@ -13,3 +13,24 @@ export const getServerAuthSession = async (ctx: {
 }) => {
   return await unstable_getServerSession(ctx.req, ctx.res, authOptions);
 };
+//   console.log({ session, user });
+//   // if the user email already exist in the db that means that the user is already created and we can just return the session
+//   if (user) {
+//     return session;
+//   }
+//   // if the user email does not exist in the db that means that the user is not created yet and we need to create the user in the db
+//   if (!user) {
+//     const user = await getUser({ email: session.user.email });
+//     if (user) {
+//       return session;
+//     }
+//     const newUser = await prisma.user.create({
+//       data: {
+//         email: session?.user.email,
+//         name: session?.user.name,
+//       },
+//     });
+//     session?.user.id = newUser.id;
+//     return session;
+//   }
+// },
