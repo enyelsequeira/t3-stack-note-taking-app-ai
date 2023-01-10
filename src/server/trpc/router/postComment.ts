@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../trpc";
-import { Prisma } from "@prisma/client";
 
 export const postComment = router({
   // using prisma we should be able to post a comment

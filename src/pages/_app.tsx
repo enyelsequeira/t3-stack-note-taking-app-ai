@@ -6,7 +6,6 @@ import { trpc } from "../utils/trpc";
 
 import "../styles/globals.css";
 import Header from "../components/Header";
-import Head from "next/head";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,

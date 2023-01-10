@@ -138,7 +138,7 @@ const Posts = () => {
       {data &&
         data.map((d) => {
           return (
-            <div>
+            <div key={d.title}>
               <Link href={`/posts/${d.id}`}>
                 <p className="text-xl text-white">{d.title}</p>
               </Link>
