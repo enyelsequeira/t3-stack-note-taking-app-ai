@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.cm-editor {
+    @apply min-h-[400px]
+}

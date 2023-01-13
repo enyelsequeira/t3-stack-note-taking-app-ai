@@ -39,24 +39,13 @@ export const getPost = async (id: string) => {
 
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    // async signIn({ user }) {
-    //   console.log({ user });
-    //   const authUser = await getUser(user.email as string);
-    //   if (authUser && authUser.email === "enyelsequeira@hotmail.com") {
-    //     //  if the user is the admin we update the isAdmin field to true
-    //     try {
-    //       await updateIsAdmin(user.email as string);
-    //     } catch (error) {
-    //       console.info("error could not update user", error);
-    //     }
-    //   }
-    //   return true;
-    // },
     async session({ session, user }) {
+      console.log({ session, user });
+
       if (session.user) {
         session.user.id = user.id;
-        session.user.isAdmin =
-          user.email === "enyelsequeira@hotmail.com" ? true : false;
+        session.user.isAdmin = user.email === "enyelsequeira@hotmail.com";
+        session.user.email = user.email;
         try {
           await updateIsAdmin(user.email as string);
         } catch (error) {
@@ -69,25 +58,27 @@ export const authOptions: NextAuthOptions = {
   },
 
   adapter: PrismaAdapter(prisma),
+  pages: {
+    signIn: "/sign",
+  },
 
   providers: [
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
       allowDangerousEmailAccountLinking: true,
-      // style: {
-      //   text: "#7289da",
-      //   bg: "#2c2f33",
-      //   bgDark: "#23272a",
-      //   logo: "#7289da",
-      //   logoDark: "#7289da",
-      //   textDark: "#ffffff",
-      // },
     }),
     GitHubProvider({
       clientId: env.GITHUB_CLIENT_ID,
       clientSecret: env.GITHUB_CLIENT_SECRET,
       allowDangerousEmailAccountLinking: true,
+      profile(profile) {
+        return {
+          id: profile.id,
+          name: profile.name,
+          email: profile.email,
+        };
+      },
     }),
   ],
 };

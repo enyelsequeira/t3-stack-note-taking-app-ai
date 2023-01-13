@@ -1,30 +1,20 @@
 import { type NextPage } from "next";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
-import dynamic from "next/dynamic";
-import { convertToRaw, EditorState } from "draft-js";
-const draftToMarkdown = dynamic(
-  () => import("draftjs-to-markdown").then((mod) => mod.draftToMarkdown),
-  { ssr: false }
-);
-const draftToHtml = dynamic(
-  () => import("draftjs-to-html").then((mod) => mod.draftToMarkdown),
-  { ssr: false }
-);
-const htmlToDraft = dynamic(
-  () => import("html-to-draftjs").then((mod) => mod.draftToMarkdown),
-  { ssr: false }
-);
-const Editor = dynamic(
-  () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
-  { ssr: false }
-);
+
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 import { trpc } from "../utils/trpc";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import Layout from "../layout";
+import Hero from "../components/hero";
 
 const Home: NextPage = () => {
+  const [doc, setDoc] = useState<string>("# Hello, world");
+  const handleDocChange = useCallback((newDoc: string) => {
+    setDoc(newDoc);
+  }, []);
+
   const utils = trpc.useContext();
 
   const { mutate } = trpc.post.create.useMutation({
@@ -38,12 +28,6 @@ const Home: NextPage = () => {
     content: "",
     keywords: "",
   });
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
-
-  function onEditorStateChange(state: any) {
-    console.log({ state });
-    setEditorState(state);
-  }
 
   const handleSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -53,59 +37,18 @@ const Home: NextPage = () => {
       keywords: inputValues.keywords,
     });
   };
-  const rawContentState = convertToRaw(editorState.getCurrentContent());
-  const markdown = draftToMarkdown(rawContentState);
-  console.log({
-    hello: draftToHtml(convertToRaw(editorState.getCurrentContent())),
-  });
 
   return (
-    <div>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <AuthShowcase />
-        <p className="">test</p>
-        <Editor
-          editorState={editorState}
-          onEditorStateChange={onEditorStateChange}
-          editorClassName="bg-white h-96 "
-        />
-        <textarea
-          disabled
-          value={draftToHtml(convertToRaw(editorState.getCurrentContent()))}
-        />
-
-        {/* <form
-          className="flex flex-col gap-4"
-          onSubmit={(e) => {
-            handleSubmitForm(e);
-          }}
-        >
-          <input
-            placeholder="input your title here"
-            value={inputValues.title}
-            onChange={(e) => {
-              setInputValues({ ...inputValues, title: e.target.value });
-            }}
-          />
-          <input
-            placeholder="input your content here"
-            value={inputValues.content}
-            onChange={(e) => {
-              setInputValues({ ...inputValues, content: e.target.value });
-            }}
-          />
-          <input
-            placeholder="input your keyword here"
-            value={inputValues.keywords}
-            onChange={(e) => {
-              setInputValues({ ...inputValues, keywords: e.target.value });
-            }}
-          />
-          <button type="submit">Submit</button>
-        </form> */}
-        {/* <Posts /> */}
-      </main>
-    </div>
+    <Layout>
+      <Hero />
+    </Layout>
+    // <div>
+    //   <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+    //     <AuthShowcase />
+    //     <h1 className={"text-xl font-bold text-red-400"}>Editor</h1>
+    //     <Link href={"/admin"}>Admin</Link>
+    //   </main>
+    // </div>
   );
 };
 
