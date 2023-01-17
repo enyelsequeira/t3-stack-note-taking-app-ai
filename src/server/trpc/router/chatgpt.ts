@@ -1,13 +1,10 @@
 import { env } from "../../../env/server.mjs";
 import { publicProcedure, router } from "../trpc";
-import { z } from "zod";
 import { Configuration, OpenAIApi } from "openai";
+import { ChatGPTFormSchema } from "../../../schemas/validations";
 
 const apiKey = env.OPENAPI_KEY;
 const organization = "org-MiSSdn3E5e4M85tYLBVoZg4B  ";
-const endpoint = "https://api.openai.com/v1/engines/davinci-codex/completions";
-const anotherPoint = "https://chat.openai.com/backend-api/conversation";
-const testPoint = "https://api.openai.com/v1/engines/davinci-codex/completions";
 
 const configuration = new Configuration({
   organization: organization,
@@ -16,11 +13,10 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 export const chatGPT = router({
-  testConversation: publicProcedure
-    .input(z.object({ input: z.string() }))
+  askQuestion: publicProcedure
+    .input(ChatGPTFormSchema)
     .mutation(async ({ input }) => {
       try {
-        console.log({ vale: input.input });
         const response = await openai.createCompletion({
           model: "text-davinci-003",
           prompt: input.input,
@@ -39,8 +35,6 @@ export const chatGPT = router({
       } catch (error) {
         return `Error with the fetch of completiond code: ${error}`;
       }
-
-      // return response;
     }),
 });
 //

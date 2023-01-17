@@ -1,5 +1,7 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../trpc";
+import { CreateNote } from "../../../schemas/validations";
+
 export const post = router({
   // get all posts
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -72,15 +74,8 @@ export const post = router({
     }),
 
   // create a post, however we need to be logged in and only if the user email is enyelsequeira@hotmail.com
-  create: publicProcedure
-    .input(
-      z.object({
-        title: z.string(),
-        content: z.string(),
-        // keywords: z.array(z.string()),
-        keywords: z.string(),
-      })
-    )
+  createNote: publicProcedure
+    .input(CreateNote)
     .mutation(async ({ ctx, input }) => {
       const { title, content, keywords } = input;
       if (!ctx.session?.user) {

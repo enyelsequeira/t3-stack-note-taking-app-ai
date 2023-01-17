@@ -43,7 +43,7 @@ const Preview = ({ doc }: Props) => {
   );
 };
 
-const ImagePreview = ({ src, alt }: any) => {
+export const ImagePreview = ({ src, alt }: any) => {
   console.log({ src, alt });
 
   return (

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-children-prop */
 import { type NextPage } from "next";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -5,42 +6,63 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 import { trpc } from "../utils/trpc";
-import { useCallback, useState } from "react";
 import Layout from "../layout";
 import Hero from "../components/hero";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { prism } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { ImagePreview } from "../components/preview";
 
 const Home: NextPage = () => {
-  const [doc, setDoc] = useState<string>("# Hello, world");
-  const handleDocChange = useCallback((newDoc: string) => {
-    setDoc(newDoc);
-  }, []);
-
-  const utils = trpc.useContext();
-
-  const { mutate } = trpc.post.create.useMutation({
-    onSuccess: () => {
-      utils.post.invalidate();
-    },
-  });
-  // const hello = trpc.example.hello.useQuery({ text: "from tRPC" });
-  const [inputValues, setInputValues] = useState({
-    title: "",
-    content: "",
-    keywords: "",
-  });
-
-  const handleSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    mutate({
-      title: inputValues.title,
-      content: inputValues.content,
-      keywords: inputValues.keywords,
-    });
-  };
+  const { data, isLoading } = trpc.post.getAll.useQuery();
 
   return (
     <Layout>
       <Hero />
+      <div className={"text-red-400"}>
+        {data &&
+          data.map((d) => {
+            return (
+              <>
+                <h1>{d.title}</h1>
+                <ReactMarkdown
+                  className={"prose prose-h1:text-red-400"}
+                  children={d.text}
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    image: ImagePreview,
+
+                    code({
+                      node,
+                      inline,
+                      className,
+                      children,
+                      style,
+                      ...props
+                    }) {
+                      console.log({ props });
+                      const match = /language-(\w+)/.exec(className || "");
+                      return !inline && match ? (
+                        <SyntaxHighlighter
+                          style={prism}
+                          children={String(children).replace(/\n$/, "")}
+                          language={match[1]}
+                          PreTag="div"
+                          {...props}
+                        />
+                      ) : (
+                        <code className={className} {...props}>
+                          {children}
+                        </code>
+                      );
+                    },
+                  }}
+                />
+              </>
+            );
+          })}
+      </div>
     </Layout>
     // <div>
     //   <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
