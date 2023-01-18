@@ -30,7 +30,9 @@ specifiers:
   '@typescript-eslint/parser': ^5.33.0
   autoprefixer: ^10.4.7
   axios: ^1.2.2
+  clsx: ^1.2.1
   codemirror: ^6.0.1
+  cva: npm:class-variance-authority@^0.4.0
   draft-js: ^0.11.7
   draftjs-to-html: ^0.9.1
   draftjs-to-markdown: ^0.6.0
@@ -54,6 +56,7 @@ specifiers:
   rehype-highlight: ^6.0.0
   remark-gfm: ^3.0.1
   superjson: 1.9.1
+  tailwind-merge: ^1.8.1
   tailwindcss: ^3.2.0
   typescript: ^4.8.4
   zod: ^3.18.0
@@ -77,7 +80,9 @@ dependencies:
   '@trpc/react-query': 10.8.1_krdvppocpp5g6rpv2pnlhwexoi
   '@trpc/server': 10.8.1
   axios: 1.2.2
+  clsx: 1.2.1
   codemirror: 6.0.1
+  cva: /class-variance-authority/0.4.0_typescript@4.9.4
   draft-js: 0.11.7_biqbaboplfbrettd7655fr4n2y
   draftjs-to-html: 0.9.1
   draftjs-to-markdown: 0.6.0
@@ -95,6 +100,7 @@ dependencies:
   rehype-highlight: 6.0.0
   remark-gfm: 3.0.1
   superjson: 1.9.1
+  tailwind-merge: 1.8.1
   zod: 3.20.2
 
 devDependencies:
@@ -1374,12 +1380,28 @@ packages:
       fsevents: 2.3.2
     dev: true
 
+  /class-variance-authority/0.4.0_typescript@4.9.4:
+    resolution: {integrity: sha512-74enNN8O9ZNieycac/y8FxqgyzZhZbxmCitAtAeUrLPlxjSd5zA7LfpprmxEcOmQBnaGs5hYhiSGnJ0mqrtBLQ==}
+    peerDependencies:
+      typescript: '>= 4.5.5 < 5'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      typescript: 4.9.4
+    dev: false
+
   /classnames/2.3.2:
     resolution: {integrity: sha512-CSbhY4cFEJRe6/GQzIk5qXZ4Jeg5pcsP7b5peFSDpffpe1cqjASH/n9UTjBwOp6XpMSTwQ8Za2K5V02ueA7Tmw==}
     dev: false
 
   /client-only/0.0.1:
     resolution: {integrity: sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==}
+    dev: false
+
+  /clsx/1.2.1:
+    resolution: {integrity: sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg==}
+    engines: {node: '>=6'}
     dev: false
 
   /codemirror/6.0.1:
@@ -4196,6 +4218,10 @@ packages:
       tslib: 2.4.1
     dev: true
 
+  /tailwind-merge/1.8.1:
+    resolution: {integrity: sha512-+fflfPxvHFr81hTJpQ3MIwtqgvefHZFUHFiIHpVIRXvG/nX9+gu2P7JNlFu2bfDMJ+uHhi/pUgzaYacMoXv+Ww==}
+    dev: false
+
   /tailwindcss/3.2.4_postcss@8.4.21:
     resolution: {integrity: sha512-AhwtHCKMtR71JgeYDaswmZXhPcW9iuI9Sp2LvZPo9upDZ7231ZJ7eA9RaURbhpXGVlrjX4cFNlB4ieTetEb7hQ==}
     engines: {node: '>=12.13.0'}
@@ -4329,7 +4355,6 @@ packages:
     resolution: {integrity: sha512-Uz+dTXYzxXXbsFpM86Wh3dKCxrQqUcVMxwU54orwlJjOpO3ao8L7j5lH+dWfTwgCwIuM9GQ2kvVotzYJMXTBZg==}
     engines: {node: '>=4.2.0'}
     hasBin: true
-    dev: true
 
   /ua-parser-js/0.7.32:
     resolution: {integrity: sha512-f9BESNVhzlhEFf2CHMSj40NWOjYPl1YKYbrvIr/hFTDEmLq7SRbWvm7FcdcpCYT95zrOhC7gZSxjdnnTpBcwVw==}

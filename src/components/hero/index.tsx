@@ -1,17 +1,39 @@
+import { Icon360 } from "@tabler/icons";
+import Box from "../Global/Box/Box";
+import { Button } from "../Global/Button/Button";
+import Text from "../Global/Text/Text";
+
 const Hero = () => {
   return (
-    <div className="relative px-6 lg:px-8">
-      <div className="mx-auto max-w-3xl pt-20 pb-32 sm:pt-48 sm:pb-40">
+    <Box as="section" className="relative px-6 lg:px-8">
+      <Box container>
         <div>
           <div>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-center sm:text-6xl">
-              An easier way to take notes and organize your thoughts.
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-gray-600 sm:text-center">
-              there are many note taking app out there and this is just another
-              one, simpler to use without all the fancy stuff and used for
-              developers and created by developers
-            </p>
+            <Text
+              as="h1"
+              className="text-4xl font-bold tracking-tight sm:text-center sm:text-6xl"
+            >
+              Simplify your workflow and boost{" "}
+              <Text as="span" accent>
+                productivity
+              </Text>{" "}
+              {""}
+              with our powerful note-taking app
+            </Text>
+
+            <Text
+              as="p"
+              className="mt-6 text-lg leading-8 text-gray-600 sm:text-center"
+            >
+              This is a user-friendly note-taking app, designed by developers
+              for developers to easily organize and streamline their thoughts
+              and ideas. Experience lightning-fast and easy note-taking, with
+              our markdown-friendly app. Create beautiful and organized notes
+              with the help of our powerful helper and {""}
+              <Text as="span" strong accent>
+                AI tools.
+              </Text>{" "}
+            </Text>
             <div className="mt-8 flex gap-x-4 sm:justify-center">
               <a
                 href="#"
@@ -22,15 +44,16 @@ const Hero = () => {
                   &rarr;
                 </span>
               </a>
-              <a
-                href="#"
-                className="inline-block rounded-lg px-4 py-1.5 text-base font-semibold leading-7 text-gray-900 ring-1 ring-gray-900/10 hover:ring-gray-900/20"
+              <Button
+                StartIcon={Icon360}
+                type="button"
+                href={"/"}
+                color="secondary"
+                size={"icon"}
+                className="w-5/12 justify-center"
               >
-                Live demo{" "}
-                <span className="text-gray-400" aria-hidden="true">
-                  &rarr;
-                </span>
-              </a>
+                HELLO WORLD
+              </Button>
             </div>
           </div>
 
@@ -62,8 +85,8 @@ const Hero = () => {
             </svg>
           </div>
         </div>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 export default Hero;

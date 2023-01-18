@@ -33,7 +33,9 @@
     "@trpc/react-query": "^10.0.0",
     "@trpc/server": "^10.0.0",
     "axios": "^1.2.2",
+    "clsx": "^1.2.1",
     "codemirror": "^6.0.1",
+    "cva": "npm:class-variance-authority@^0.4.0",
     "draft-js": "^0.11.7",
     "draftjs-to-html": "^0.9.1",
     "draftjs-to-markdown": "^0.6.0",
@@ -51,6 +53,7 @@
     "rehype-highlight": "^6.0.0",
     "remark-gfm": "^3.0.1",
     "superjson": "1.9.1",
+    "tailwind-merge": "^1.8.1",
     "zod": "^3.18.0"
   },
   "devDependencies": {

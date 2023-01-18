@@ -13,6 +13,7 @@ import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { prism } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { ImagePreview } from "../components/preview";
+import SubHero from "../components/sub-hero";
 
 const Home: NextPage = () => {
   const { data, isLoading } = trpc.post.getAll.useQuery();
@@ -20,6 +21,7 @@ const Home: NextPage = () => {
   return (
     <Layout>
       <Hero />
+      <SubHero />
       <div className={"text-red-400"}>
         {data &&
           data.map((d) => {
