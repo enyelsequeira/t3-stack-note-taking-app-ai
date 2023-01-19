@@ -23,12 +23,11 @@ export const updateIsAdmin = async (email: string) => {
 export const authOptions: NextAuthOptions = {
   callbacks: {
     async session({ session, user }) {
-      console.log({ session, user });
-
       if (session.user) {
         session.user.id = user.id;
         session.user.isAdmin = user.email === env.USER_ADMIN;
         session.user.email = user.email;
+
         try {
           await updateIsAdmin(user.email as string);
         } catch (error) {

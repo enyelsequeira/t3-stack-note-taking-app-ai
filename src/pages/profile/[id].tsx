@@ -42,9 +42,17 @@ function classNames(...classes: any[]) {
 const Profile = () => {
   const router = useRouter();
   const { id } = router.query;
+  const utils = trpc.useContext().user;
 
   const { data } = trpc.user.byId.useQuery({
     id: id as string,
+  });
+  const [userName, setUserName] = useState(data?.name || "");
+  const mutateUser = trpc.user.updateById.useMutation({
+    onSuccess: () => {
+      alert("success");
+      utils.invalidate();
+    },
   });
 
   console.log({ data });
@@ -141,11 +149,7 @@ const Profile = () => {
                   </nav>
                 </aside>
 
-                <form
-                  className="divide-y divide-gray-200 lg:col-span-9"
-                  action="#"
-                  method="POST"
-                >
+                <div className="divide-y divide-gray-200 lg:col-span-9">
                   {/* Profile section */}
                   <div className="py-6 px-4 sm:p-6 lg:pb-8">
                     <div>
@@ -177,7 +181,8 @@ const Profile = () => {
                               id="username"
                               autoComplete="username"
                               className="block w-full min-w-0 flex-grow rounded-none rounded-r-md border-gray-300 focus:border-sky-500 focus:ring-sky-500 sm:text-sm"
-                              defaultValue={user.handle}
+                              value={userName}
+                              onChange={(e) => setUserName(e.target.value)}
                             />
                           </div>
                         </div>
@@ -506,14 +511,19 @@ const Profile = () => {
                         Cancel
                       </button>
                       <button
-                        type="submit"
+                        onClick={() => {
+                          mutateUser.mutateAsync({
+                            id: data?.id as string,
+                            username: userName,
+                          });
+                        }}
                         className="ml-5 inline-flex justify-center rounded-md border border-transparent bg-sky-700 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
                       >
                         Save
                       </button>
                     </div>
                   </div>
-                </form>
+                </div>
               </div>
             </div>
           </div>

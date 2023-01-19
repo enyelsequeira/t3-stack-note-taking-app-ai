@@ -16,6 +16,7 @@ export const navigation = [
 const Header = () => {
   const { data: sessionData } = useSession();
   const utils = trpc.useContext();
+  console.log({ sessionData });
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
