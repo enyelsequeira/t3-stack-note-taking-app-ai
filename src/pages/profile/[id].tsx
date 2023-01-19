@@ -1,15 +1,12 @@
-import { Fragment, useState } from "react";
-import { Disclosure, Menu, Switch, Transition } from "@headlessui/react";
+import { useState } from "react";
+import { Switch } from "@headlessui/react";
 import {
   IconBellPlus,
   IconCreditCard,
-  IconMagnet,
-  IconMenu,
   IconPassword,
   IconSettings,
   IconTriangleSquareCircle,
   IconUser,
-  IconX,
 } from "@tabler/icons";
 import Layout from "../../layout";
 
@@ -20,12 +17,7 @@ const user = {
   imageUrl:
     "https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=320&h=320&q=80",
 };
-const navigation = [
-  { name: "Dashboard", href: "#", current: true },
-  { name: "Jobs", href: "#", current: false },
-  { name: "Applicants", href: "#", current: false },
-  { name: "Company", href: "#", current: false },
-];
+
 const subNavigation = [
   { name: "Profile", href: "#", icon: IconUser, current: true },
   { name: "Account", href: "#", icon: IconSettings, current: false },
@@ -38,11 +30,6 @@ const subNavigation = [
     icon: IconTriangleSquareCircle,
     current: false,
   },
-];
-const userNavigation = [
-  { name: "Your Profile", href: "#" },
-  { name: "Settings", href: "#" },
-  { name: "Sign out", href: "#" },
 ];
 
 function classNames(...classes: any[]) {
