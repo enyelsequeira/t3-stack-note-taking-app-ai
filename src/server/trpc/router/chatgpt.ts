@@ -4,7 +4,7 @@ import { Configuration, OpenAIApi } from "openai";
 import { ChatGPTFormSchema } from "../../../schemas/validations";
 
 const apiKey = env.OPENAPI_KEY;
-const organization = "org-MiSSdn3E5e4M85tYLBVoZg4B  ";
+const organization = env.OPENAPI_ORGANIZATION;
 
 const configuration = new Configuration({
   organization: organization,

@@ -1,5 +1,5 @@
 // @ts-check
-import {z} from "zod";
+import { z } from "zod";
 
 /**
  * Specify your server-side environment variables schema here.
@@ -24,6 +24,7 @@ export const serverSchema = z.object({
   GITHUB_CLIENT_ID: z.string(),
   GITHUB_CLIENT_SECRET: z.string(),
   OPENAPI_KEY: z.string(),
+  OPENAPI_ORGANIZATION: z.string(),
 });
 
 /**
