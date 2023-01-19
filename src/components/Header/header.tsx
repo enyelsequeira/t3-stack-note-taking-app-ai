@@ -4,7 +4,8 @@ import MobileHeader from "./mobile-header";
 import Image from "next/image";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
-import { useRouter } from "next/router";
+import { Button } from "../Global/Button/Button";
+import { trpc } from "../../utils/trpc";
 
 export const navigation = [
   { name: "Product", href: "/editor" },
@@ -14,7 +15,7 @@ export const navigation = [
 ];
 const Header = () => {
   const { data: sessionData } = useSession();
-  const router = useRouter();
+  const utils = trpc.useContext();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -61,10 +62,19 @@ const Header = () => {
           <div className="hidden lg:flex lg:min-w-0 lg:flex-1 lg:justify-end">
             {sessionData ? (
               <>
-                <div className="mx-2 inline-block rounded-lg px-3 py-1.5 text-sm font-semibold leading-6 text-gray-900 shadow-sm ring-1 ring-gray-900/10 hover:ring-gray-900/20">
+                <Button
+                  onMouseEnter={() => {
+                    utils.user.byId.prefetch({
+                      id: sessionData.user?.id as string,
+                    });
+                  }}
+                  href={`/profile/${sessionData.user?.id}`}
+                  className="mx-2 inline-block rounded-lg px-3 py-1.5 text-sm font-semibold leading-6 text-gray-900 shadow-sm ring-1 ring-gray-900/10 hover:ring-gray-900/20"
+                >
                   Welcome {sessionData?.user?.name}
-                </div>
-                <button
+                </Button>
+
+                <Button
                   onClick={async () => {
                     try {
                       signOut();
@@ -76,7 +86,7 @@ const Header = () => {
                 >
                   {" "}
                   Log out
-                </button>
+                </Button>
               </>
             ) : (
               <Link

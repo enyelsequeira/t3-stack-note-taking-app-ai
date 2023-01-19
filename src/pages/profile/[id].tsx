@@ -9,6 +9,9 @@ import {
   IconUser,
 } from "@tabler/icons";
 import Layout from "../../layout";
+import { trpc } from "../../utils/trpc";
+import { useRouter } from "next/router";
+import Image from "next/image";
 
 const user = {
   name: "Debbie Lewis",
@@ -37,6 +40,15 @@ function classNames(...classes: any[]) {
 }
 
 const Profile = () => {
+  const router = useRouter();
+  const { id } = router.query;
+
+  const { data } = trpc.user.byId.useQuery({
+    id: id as string,
+  });
+
+  console.log({ data });
+
   const [availableToHire, setAvailableToHire] = useState(true);
   const [privateAccount, setPrivateAccount] = useState(false);
   const [allowCommenting, setAllowCommenting] = useState(true);
@@ -157,7 +169,7 @@ const Profile = () => {
                           </label>
                           <div className="mt-1 flex rounded-md shadow-sm">
                             <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">
-                              workcation.com/
+                              MemoMinder.com/
                             </span>
                             <input
                               type="text"
@@ -233,17 +245,23 @@ const Profile = () => {
                         </div>
 
                         <div className="relative hidden overflow-hidden rounded-full lg:block">
-                          <img
-                            className="relative h-40 w-40 rounded-full"
-                            src={user.imageUrl}
-                            alt=""
-                          />
+                          {data && data?.image && (
+                            <Image
+                              src={data?.image}
+                              blurDataURL={data?.image}
+                              placeholder="blur"
+                              alt={(data && data?.email) || ""}
+                              className="relative h-40 w-40 rounded-full"
+                              width={160}
+                              height={160}
+                            />
+                          )}
+
                           <label
                             htmlFor="desktop-user-photo"
                             className="absolute inset-0 flex h-full w-full items-center justify-center bg-black bg-opacity-75 text-sm font-medium text-white opacity-0 focus-within:opacity-100 hover:opacity-100"
                           >
                             <span>Change</span>
-                            <span className="sr-only"> user photo</span>
                             <input
                               type="file"
                               id="desktop-user-photo"

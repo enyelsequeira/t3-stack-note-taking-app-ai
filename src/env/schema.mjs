@@ -25,6 +25,7 @@ export const serverSchema = z.object({
   GITHUB_CLIENT_SECRET: z.string(),
   OPENAPI_KEY: z.string(),
   OPENAPI_ORGANIZATION: z.string(),
+  USER_ADMIN: z.string(),
 });
 
 /**

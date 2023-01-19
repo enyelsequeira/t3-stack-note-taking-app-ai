@@ -8,15 +8,6 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db/client";
 
-//  lets get the user by email from the database using prisma
-export const getUser = async (email: string) => {
-  const user = await prisma.user.findUnique({
-    where: {
-      email,
-    },
-  });
-  return user;
-};
 export const updateIsAdmin = async (email: string) => {
   const user = await prisma.user.update({
     where: {
@@ -28,14 +19,6 @@ export const updateIsAdmin = async (email: string) => {
   });
   return user;
 };
-export const getPost = async (id: string) => {
-  const post = await prisma.post.findUnique({
-    where: {
-      id: id,
-    },
-  });
-  return post;
-};
 
 export const authOptions: NextAuthOptions = {
   callbacks: {
@@ -44,7 +27,7 @@ export const authOptions: NextAuthOptions = {
 
       if (session.user) {
         session.user.id = user.id;
-        session.user.isAdmin = user.email === "enyelsequeira@hotmail.com";
+        session.user.isAdmin = user.email === env.USER_ADMIN;
         session.user.email = user.email;
         try {
           await updateIsAdmin(user.email as string);

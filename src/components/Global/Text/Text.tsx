@@ -52,7 +52,7 @@ const Text = React.forwardRef(
     {
       as,
       className,
-      variant = "p/false",
+      // variant = "p/false",
       size,
       strong,
       accent,
@@ -60,7 +60,7 @@ const Text = React.forwardRef(
     }: PolymorphicPropsWithoutRef<TextProps, C>,
     ref: PolymorphicRef<C>
   ) => {
-    console.log({ variant });
+    // console.log({ variant });
     // const [test, accent2] = variant.split("/") as [
     //   InferredVariantProps["size"],
     //   InferredVariantProps["accent"]

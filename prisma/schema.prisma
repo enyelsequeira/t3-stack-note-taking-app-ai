@@ -54,6 +54,11 @@ model User {
   Comment       Comment[]
   Post          Post[]
   Session       Session[]
+  firstName     String?
+  lastName      String?
+  password      String?
+  username      String?   @unique
+  profleUrl     String?
 }
 
 model Post {

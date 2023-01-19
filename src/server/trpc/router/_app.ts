@@ -1,3 +1,4 @@
+import { user } from "./user";
 import { router } from "../trpc";
 import { authRouter } from "./auth";
 import { exampleRouter } from "./example";
@@ -9,6 +10,7 @@ export const appRouter = router({
   auth: authRouter,
   post: post,
   GPT: chatGPT,
+  user,
   // comment: postComment,
 });
 
