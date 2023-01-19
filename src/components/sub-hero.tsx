@@ -29,7 +29,7 @@ const SubHero = () => {
   return (
     <Box
       as={"section"}
-      className="mx-auto mt-10 grid w-full max-w-screen-2xl  grid-cols-1 border  md:grid-cols-2 "
+      className="mx-auto mt-10 grid w-full max-w-screen-2xl  grid-cols-1   md:grid-cols-2 "
     >
       <Box as="div" className=" mx-auto ">
         <Image
@@ -45,8 +45,8 @@ const SubHero = () => {
       >
         <div className="lg:col-span-2">
           <Text
-            variant="h2/true"
             size={"h6"}
+            accent
             // className="font-medium text-gray-500"
           >
             For Developers by Developers

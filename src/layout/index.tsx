@@ -1,6 +1,7 @@
 /* This example requires Tailwind CSS v3.0+ */
 import Header from "../components/Header/header";
 import type { ReactNode } from "react";
+import Footer from "../components/Footer";
 
 type Props = {
   children: ReactNode;
@@ -37,6 +38,7 @@ function Layout({ children }: Props) {
       </div>
       <Header />
       <main>{children}</main>
+      <Footer />
     </div>
   );
 }

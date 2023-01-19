@@ -61,12 +61,11 @@ const Text = React.forwardRef(
     ref: PolymorphicRef<C>
   ) => {
     console.log({ variant });
-    const [test, accent2] = variant.split("/") as [
-      InferredVariantProps["size"],
-      InferredVariantProps["accent"]
-    ];
+    // const [test, accent2] = variant.split("/") as [
+    //   InferredVariantProps["size"],
+    //   InferredVariantProps["accent"]
+    // ];
     const Element = as ?? DEFAULT_TAG;
-    console.log({ test, accent2 });
 
     return (
       <Element
@@ -74,10 +73,10 @@ const Text = React.forwardRef(
         className={mergeClasses(
           textClasses({
             // if test exist use test else use size
-            size: test ? test : size,
+            size,
 
             strong,
-            accent: accent2 || accent,
+            accent,
           }),
           className
         )}
