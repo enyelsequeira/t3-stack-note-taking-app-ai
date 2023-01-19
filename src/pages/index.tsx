@@ -14,6 +14,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { prism } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { ImagePreview } from "../components/preview";
 import SubHero from "../components/sub-hero";
+import Features from "../components/features";
 
 const Home: NextPage = () => {
   const { data, isLoading } = trpc.post.getAll.useQuery();
@@ -22,7 +23,8 @@ const Home: NextPage = () => {
     <Layout>
       <Hero />
       <SubHero />
-      <div className={"text-red-400"}>
+      <Features />
+      {/* <div className={"text-red-400"}>
         {data &&
           data.map((d) => {
             return (
@@ -64,15 +66,8 @@ const Home: NextPage = () => {
               </>
             );
           })}
-      </div>
+      </div> */}
     </Layout>
-    // <div>
-    //   <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-    //     <AuthShowcase />
-    //     <h1 className={"text-xl font-bold text-red-400"}>Editor</h1>
-    //     <Link href={"/admin"}>Admin</Link>
-    //   </main>
-    // </div>
   );
 };
 

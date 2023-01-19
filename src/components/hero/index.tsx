@@ -1,4 +1,4 @@
-import { Icon360 } from "@tabler/icons";
+import { Icon360, IconArrowRight } from "@tabler/icons";
 import Box from "../Global/Box/Box";
 import { Button } from "../Global/Button/Button";
 import Text from "../Global/Text/Text";
@@ -34,25 +34,13 @@ const Hero = () => {
                 AI tools.
               </Text>{" "}
             </Text>
-            <div className="mt-8 flex gap-x-4 sm:justify-center">
-              <a
-                href="#"
-                className="inline-block rounded-lg bg-indigo-600 px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-indigo-600 hover:bg-indigo-700 hover:ring-indigo-700"
-              >
+            <div className="mt-8 flex items-center gap-x-4 sm:justify-center">
+              <Button types={"hero"} href={"/login"} EndIcon={IconArrowRight}>
                 Get started{" "}
-                <span className="text-indigo-200" aria-hidden="true">
-                  &rarr;
-                </span>
-              </a>
-              <Button
-                StartIcon={Icon360}
-                type="button"
-                href={"/"}
-                color="secondary"
-                size={"icon"}
-                className="w-5/12 justify-center"
-              >
-                HELLO WORLD
+              </Button>
+
+              <Button types={"subHero"} href={"/signin"} EndIcon={Icon360}>
+                Sign In{" "}
               </Button>
             </div>
           </div>

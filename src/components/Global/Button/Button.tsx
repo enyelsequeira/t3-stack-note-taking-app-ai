@@ -52,8 +52,24 @@ const buttonClasses = cva(
       loading: {
         true: "cursor-wait",
       },
+      rounded: {
+        sm: "rounded-sm",
+        md: "rounded-md",
+        lg: "rounded-lg",
+      },
       disabled: {
         true: "cursor-not-allowed",
+      },
+      padding: {
+        hero: "px-4 py-1.5",
+      },
+      font: {
+        hero: "text-base font-semibold leading-7",
+      },
+      types: {
+        hero: "inline-block rounded-lg bg-indigo-600 px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-indigo-600 hover:bg-indigo-700 hover:ring-indigo-700",
+        subHero:
+          "inline-block text-black rounded-lg px-4 py-1.5 text-base font-semibold leading-7  ring-1 ring-gray-900/10 hover:ring-gray-900/20",
       },
     },
     compoundVariants: [
@@ -149,6 +165,7 @@ export const Button = forwardRef<
     loading = false,
     color = "primary",
     size,
+    types,
     type = "button",
     StartIcon,
     EndIcon,
@@ -169,7 +186,13 @@ export const Button = forwardRef<
       type: !isLink ? type : undefined,
       ref: forwardedRef,
       className: classNames(
-        buttonClasses({ color, size, loading, disabled: props.disabled }),
+        buttonClasses({
+          color,
+          size,
+          loading,
+          types,
+          disabled: props.disabled,
+        }),
         props.className
       ),
       onClick: disabled
@@ -200,7 +223,7 @@ export const Button = forwardRef<
         </>
       )}
       {size === "fab" ? (
-        <span className="hidden sm:inline">{props.children}</span>
+        <span className="flex sm:inline">{props.children}</span>
       ) : (
         props.children
       )}
