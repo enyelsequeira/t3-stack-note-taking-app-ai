@@ -37,15 +37,16 @@ export const user = router({
           id: input.id,
         },
         data: {
-          username,
-          bio,
+          ...(username && { username }),
+          ...(bio && { bio }),
 
-          firstName,
-          lastName,
-          portfolio,
+          ...(firstName && { firstName }),
+          ...(lastName && { lastName }),
+          ...(portfolio && { portfolio }),
 
-          profileUrl,
-          location,
+          ...(profileUrl && { profileUrl }),
+
+          ...(location && { location }),
         },
       });
       return user;

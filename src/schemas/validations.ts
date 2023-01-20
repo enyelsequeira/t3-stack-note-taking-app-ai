@@ -24,22 +24,8 @@ export const UpdateUserSchema = z.object({
     .string()
     .optional()
     .transform((value) => value?.trim()),
-  // profileUrl: z.string().optional(),
-  profileUrl: z
-    .string()
-    .refine(
-      (value) =>
-        !value ||
-        !value.trim() ||
-        /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/.test(
-          value
-        ),
-      {
-        message: "Invalid URL",
-      }
-    )
-    .optional(),
-  // .transform((value) => value?.trim())
+  profileUrl: z.union([z.literal(""), z.string().url()]).optional(),
+
   username: z
     .string()
     .optional()
@@ -47,25 +33,7 @@ export const UpdateUserSchema = z.object({
   // location should be ISO2 country code
   location: z.string().optional(),
   bio: z.string().max(160).optional(),
-  portfolio: z
-    .string()
-    .refine(
-      (value) =>
-        !value ||
-        !value.trim() ||
-        /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/.test(
-          value
-        ),
-      {
-        message: "Invalid URL",
-      }
-    )
-    .optional(),
+  portfolio: z.union([z.literal(""), z.string().url()]).optional(),
 });
 // type
 export type UpdateUserSchemaType = z.infer<typeof UpdateUserSchema>;
-
-export const testSchema = z.object({
-  profielurl: z.string().optional(),
-  profiletest: z.string().url().optional(),
-});
