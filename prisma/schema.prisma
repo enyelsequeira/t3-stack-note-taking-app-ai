@@ -58,7 +58,10 @@ model User {
   lastName      String?
   password      String?
   username      String?   @unique
-  profleUrl     String?
+  profileUrl    String?
+  bio           String?
+  location      String?
+  portfolio     String?
 }
 
 model Post {
