@@ -280,6 +280,12 @@ const ProfileBasicInfo = () => {
       </form>
 
       <p>{JSON.stringify(methods.watch())}</p>
+      <p>
+        {/* errors is an object  so lets convert into an array and dispaly the message*/}
+        {Object.entries(methods?.formState?.errors).map(([key, value]) => (
+          <p key={key}>{value.message}</p>
+        ))}
+      </p>
     </FormProvider>
   );
 };
