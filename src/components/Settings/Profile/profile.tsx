@@ -1,10 +1,10 @@
+import { Button } from "@/components/Global/Button/Button";
 import useZodForm from "@/hooks/use-zod-form";
 import type { UpdateUserSchemaType } from "@/schemas/validations";
 import { UpdateUserSchema } from "@/schemas/validations";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import type { SubmitHandler } from "react-hook-form";
-import { useForm } from "react-hook-form";
 import { FormProvider } from "react-hook-form";
 import { trpc } from "../../../utils/trpc";
 import Input from "../../Global/Input/Input";
@@ -15,25 +15,14 @@ const ProfileBasicInfo = () => {
   const { id } = router.query;
   const utils = trpc.useContext().user;
 
-  const { data } = trpc.user.byId.useQuery({
-    id: id as string,
-  });
-
-  // const methods = useForm<UpdateUserSchemaType>({
-  //   defaultValues: async () => {
-  //     await data;
-  //     return {
-  //       username: data?.username,
-  //       name: data?.name,
-  //       bio: data?.bio,
-  //       firstName: data?.firstName,
-  //       lastName: data?.lastName,
-  //       location: data?.location,
-  //       portfolio: data?.portfolio,
-  //       profileUrl: data?.profileUrl,
-  //     };
-  //   },
-  // });
+  const { data } = trpc.user.byId.useQuery(
+    {
+      id: id as string,
+    },
+    {
+      enabled: !!id,
+    }
+  );
 
   const mutateUser = trpc.user.updateById.useMutation({
     onSuccess: () => {
@@ -41,8 +30,19 @@ const ProfileBasicInfo = () => {
     },
   });
 
+  // values should be all the data
+  const values = {
+    firstName: data?.firstName as string,
+    lastName: data?.lastName as string,
+    profileUrl: data?.profileUrl as string,
+    username: data?.username as string,
+    bio: data?.bio as string,
+    location: data?.location as string,
+    portfolio: data?.portfolio as string,
+  };
   const methods = useZodForm({
     schema: UpdateUserSchema,
+    values,
   });
 
   const handleSubmitForm: SubmitHandler<UpdateUserSchemaType> = async (
@@ -263,17 +263,18 @@ const ProfileBasicInfo = () => {
         {/* Privacy section */}
         {/* <PrivacyProfile /> */}
         <div className="mt-4 flex justify-end py-4 px-4 sm:px-6">
-          <button
+          <Button
+            disabled={mutateUser.isLoading}
             type="button"
-            className="inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+            className="disab inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 disabled:cursor-wait disabled:opacity-50"
           >
             Cancel
-          </button>
+          </Button>
           <button
             type="submit"
-            className="ml-5 inline-flex justify-center rounded-md border border-transparent bg-sky-700 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+            className="ml-5 inline-flex justify-center rounded-md border border-transparent bg-sky-700 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 disabled:cursor-wait disabled:opacity-50"
           >
-            Save
+            {mutateUser.isLoading ? "Saving..." : "Save"}
           </button>
         </div>
       </form>
