@@ -1,21 +1,27 @@
 import { Button } from "@/components/Global/Button/Button";
+import CountrySelect from "@/components/Select/country-select";
 import useZodForm from "@/hooks/use-zod-form";
 import type { UpdateUserSchemaType } from "@/schemas/validations";
 import { UpdateUserSchema } from "@/schemas/validations";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import type { SubmitHandler } from "react-hook-form";
+import { Controller } from "react-hook-form";
 import { FormProvider } from "react-hook-form";
 import { trpc } from "../../../utils/trpc";
 import Input from "../../Global/Input/Input";
 import Text from "../../Global/Text/Text";
+import { getNames, getName } from "country-list";
+import { useEffect, useState } from "react";
 
 const ProfileBasicInfo = () => {
   const router = useRouter();
   const { id } = router.query;
   const utils = trpc.useContext().user;
 
-  const { data } = trpc.user.byId.useQuery(
+  const countries = getNames();
+
+  const { data, isLoading } = trpc.user.byId.useQuery(
     {
       id: id as string,
     },
@@ -40,6 +46,11 @@ const ProfileBasicInfo = () => {
     location: data?.location as string,
     portfolio: data?.portfolio as string,
   };
+
+  const [selectedCountry, setSelectedCountry] = useState(
+    getName((data?.location as string) || "US")
+  );
+
   const methods = useZodForm({
     schema: UpdateUserSchema,
     values,
@@ -52,10 +63,12 @@ const ProfileBasicInfo = () => {
       id: id as string,
       values,
     });
-    methods.reset();
   };
-
-  console.log({ data });
+  useEffect(() => {
+    if (!isLoading) {
+      setSelectedCountry(getName(data?.location as string));
+    }
+  }, [isLoading, data?.location]);
 
   return (
     <FormProvider {...methods}>
@@ -92,7 +105,9 @@ const ProfileBasicInfo = () => {
                     id="username"
                     autoComplete="username"
                     placeholder={data?.username || "Username"}
-                    className="block w-full min-w-0 flex-grow rounded-none rounded-r-md border-gray-300 focus:border-sky-500 focus:ring-sky-500 sm:text-sm"
+                    className={`border-l-0border block w-full min-w-0 flex-grow rounded-none rounded-r-md border border-gray-300  focus:border-sky-500  focus:outline-none focus:ring-sky-500 sm:text-sm ${
+                      methods?.formState?.errors?.username && "border-red-500"
+                    }`}
                     {...methods.register("username")}
                   />
                 </div>
@@ -110,7 +125,9 @@ const ProfileBasicInfo = () => {
                     id="bio"
                     placeholder={data?.bio || "Bio"}
                     rows={3}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm"
+                    className={`mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm outline-none focus:border-sky-500 focus:outline-none sm:text-sm   ${
+                      methods?.formState?.errors?.bio && "border-red-500"
+                    }`}
                     defaultValue={""}
                     {...methods.register("bio")}
                   />
@@ -243,49 +260,46 @@ const ProfileBasicInfo = () => {
               placeholder={data?.profileUrl || ""}
             />
 
-            <Input
-              wrapperClassName="col-span-12 sm:col-span-6"
+            <Controller
+              control={methods.control}
               name="location"
-              label="Location"
-              type="text"
-              autoComplete="organization"
-              labelClassName="block text-sm font-medium text-gray-700"
-              inputClassName="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm  focus:outline-none sm:text-sm ring-0 focus-ring-0 outline-none"
-              register={methods.register}
-              error={methods?.formState?.errors?.location?.message}
-              placeholder={data?.location || ""}
+              defaultValue={data?.location || ""}
+              render={({ field: { onChange } }) => (
+                <CountrySelect
+                  selectedCountry={selectedCountry}
+                  setSelectedCountry={setSelectedCountry}
+                  countries={countries}
+                  onChange={(e: string) => {
+                    onChange(e);
+                    setSelectedCountry(e);
+                  }}
+                />
+              )}
             />
-            <div className="flex flex-col font-black text-red-400">
+
+            {/* <div className="flex flex-col font-black text-red-400">
               {JSON.stringify(data)}
-            </div>
+            </div> */}
           </div>
         </div>
         {/* Privacy section */}
         {/* <PrivacyProfile /> */}
         <div className="mt-4 flex justify-end py-4 px-4 sm:px-6">
           <Button
-            disabled={mutateUser.isLoading}
-            type="button"
-            className="disab inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 disabled:cursor-wait disabled:opacity-50"
-          >
-            Cancel
-          </Button>
-          <button
             type="submit"
-            className="ml-5 inline-flex justify-center rounded-md border border-transparent bg-sky-700 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 disabled:cursor-wait disabled:opacity-50"
+            disabled={mutateUser.isLoading}
+            intention="save"
           >
             {mutateUser.isLoading ? "Saving..." : "Save"}
-          </button>
+          </Button>
         </div>
       </form>
 
-      <p>{JSON.stringify(methods.watch())}</p>
-      <p>
-        {/* errors is an object  so lets convert into an array and dispaly the message*/}
+      {/* <p>
         {Object.entries(methods?.formState?.errors).map(([key, value]) => (
           <p key={key}>{value.message}</p>
         ))}
-      </p>
+      </p> */}
     </FormProvider>
   );
 };

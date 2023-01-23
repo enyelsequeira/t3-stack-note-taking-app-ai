@@ -22,6 +22,7 @@ specifiers:
   '@trpc/next': ^10.0.0
   '@trpc/react-query': ^10.0.0
   '@trpc/server': ^10.0.0
+  '@types/country-list': ^2.1.1
   '@types/draft-js': ^0.11.10
   '@types/node': ^18.0.0
   '@types/prettier': ^2.7.2
@@ -35,6 +36,7 @@ specifiers:
   axios: ^1.2.2
   clsx: ^1.2.1
   codemirror: ^6.0.1
+  country-list: ^2.3.0
   cva: npm:class-variance-authority@^0.4.0
   draft-js: ^0.11.7
   draftjs-to-html: ^0.9.1
@@ -86,6 +88,7 @@ dependencies:
   axios: 1.2.2
   clsx: 1.2.1
   codemirror: 6.0.1
+  country-list: 2.3.0
   cva: /class-variance-authority/0.4.0_typescript@4.9.4
   draft-js: 0.11.7_biqbaboplfbrettd7655fr4n2y
   draftjs-to-html: 0.9.1
@@ -112,6 +115,7 @@ devDependencies:
   '@commitlint/config-conventional': 17.4.2
   '@faker-js/faker': 7.6.0
   '@tailwindcss/typography': 0.5.8_tailwindcss@3.2.4
+  '@types/country-list': 2.1.1
   '@types/draft-js': 0.11.10
   '@types/node': 18.11.18
   '@types/prettier': 2.7.2
@@ -1110,6 +1114,10 @@ packages:
     resolution: {integrity: sha512-yOlFc+7UtL/89t2ZhjPvvB/DeAr3r+Dq58IgzsFkOAvVC6NMJXmCGjbptdXdR9qsX7pKcTL+s87FtYREi2dEEQ==}
     dev: true
 
+  /@types/country-list/2.1.1:
+    resolution: {integrity: sha512-maNkQzgLbyoi5mwwAL0KCb6l5/rn02N9y/CIBf4AYPrJ0pU2AvUTQ5LOw6GA4AAPrtiL44LWiwXzybUAUUYA3Q==}
+    dev: true
+
   /@types/debug/4.1.7:
     resolution: {integrity: sha512-9AonUzyTjXXhEOa0DnqpzZi6VHlqKMswga9EXjpXnnqxwLtdvPPtlO8evrI5D9S6asFRCQ6v+wpiUKbw+vKqyg==}
     dependencies:
@@ -1857,6 +1865,10 @@ packages:
       parse-json: 5.2.0
       path-type: 4.0.0
     dev: true
+
+  /country-list/2.3.0:
+    resolution: {integrity: sha512-qZk66RlmQm7fQjMYWku1AyjlKPogjPEorAZJG88owPExoPV8EsyCcuFLvO2afTXHEhi9liVOoyd+5A6ZS5QwaA==}
+    dev: false
 
   /create-require/1.1.1:
     resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}

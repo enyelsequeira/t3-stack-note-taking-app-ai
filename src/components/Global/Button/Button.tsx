@@ -65,8 +65,9 @@ const buttonClasses = cva(
       font: {
         hero: "text-base font-semibold leading-7",
       },
-      types: {
+      intention: {
         hero: "inline-block rounded-lg bg-indigo-600 px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-indigo-600 hover:bg-indigo-700 hover:ring-indigo-700",
+        save: "ml-5 inline-flex justify-center rounded-md border border-transparent bg-sky-700 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 disabled:cursor-wait disabled:opacity-50",
         subHero:
           "inline-block text-black rounded-lg px-4 py-1.5 text-base font-semibold leading-7  ring-1 ring-gray-900/10 hover:ring-gray-900/20",
       },
@@ -89,7 +90,7 @@ export const Button = forwardRef<
     loading = false,
     color = "primary",
     size,
-    types,
+    intention,
     type = "button",
     StartIcon,
     EndIcon,
@@ -114,7 +115,7 @@ export const Button = forwardRef<
           color,
           size,
           loading,
-          types,
+          intention,
           disabled: props.disabled,
         }),
         props.className

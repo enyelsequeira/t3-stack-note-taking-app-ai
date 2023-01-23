@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { getCode } from "country-list";
 
 export const ChatGPTFormSchema = z.object({
   input: z.string(),
@@ -16,23 +17,82 @@ export const CreateNote = z.object({
 
 export const UpdateUserSchema = z.object({
   firstName: z
-    .string()
+    .union([
+      z.literal(""),
+      z
+        .string()
+        .max(50, {
+          message: "First name is too long",
+        })
+        .min(2, {
+          message: "First name is too short",
+        }),
+    ])
     .optional()
     .transform((value) => value?.trim()),
 
   lastName: z
-    .string()
+    .union([
+      z.literal(""),
+      z
+        .string()
+        .max(50, {
+          message: "Last name is too long",
+        })
+        .min(2, {
+          message: "Last name is too short",
+        }),
+    ])
     .optional()
     .transform((value) => value?.trim()),
   profileUrl: z.union([z.literal(""), z.string().url()]).optional(),
 
   username: z
-    .string()
+    .union([
+      z.literal(""),
+      z
+        .string()
+        .max(50, {
+          message: "Username is too long",
+        })
+        .min(2, {
+          message: "Username is too short",
+        }),
+    ])
     .optional()
     .transform((value) => value?.trim()),
   // location should be ISO2 country code
-  location: z.string().optional(),
-  bio: z.string().max(160).optional(),
+  location: z
+    .union([
+      z.literal(""),
+      z
+        .string()
+        .max(100, {
+          message: "Location is too long",
+        })
+        .transform((value) => {
+          if (value) {
+            const code = getCode(value);
+            if (code) {
+              return code;
+            }
+          }
+          return value;
+        }),
+    ])
+    .optional(),
+  bio: z
+    .union([
+      z.literal(""),
+      z
+        .string()
+        .max(300, {
+          message: "Bio is too long",
+        })
+        .min(2, { message: "Bio is too short" }),
+    ])
+    .optional()
+    .transform((value) => value?.trim()),
   portfolio: z.union([z.literal(""), z.string().url()]).optional(),
 });
 // type

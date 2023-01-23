@@ -35,11 +35,15 @@ const Hero = () => {
               </Text>{" "}
             </Text>
             <div className="mt-8 flex items-center gap-x-4 sm:justify-center">
-              <Button types={"hero"} href={"/login"} EndIcon={IconArrowRight}>
+              <Button
+                intention={"hero"}
+                href={"/login"}
+                EndIcon={IconArrowRight}
+              >
                 Get started{" "}
               </Button>
 
-              <Button types={"subHero"} href={"/signin"} EndIcon={Icon360}>
+              <Button intention={"subHero"} href={"/signin"} EndIcon={Icon360}>
                 Sign In{" "}
               </Button>
             </div>
