@@ -2,6 +2,7 @@ import { router, publicProcedure, protectedProcedure } from "../trpc";
 
 export const authRouter = router({
   getSession: publicProcedure.query(({ ctx }) => {
+    console.log({ SESSION: ctx.session });
     return ctx.session;
   }),
   getSecretMessage: protectedProcedure.query(() => {

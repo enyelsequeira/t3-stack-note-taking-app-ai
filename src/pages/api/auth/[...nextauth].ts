@@ -1,9 +1,13 @@
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import GitHubProvider from "next-auth/providers/github";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 // Prisma adapter for NextAuth, optional and can be removed
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import invariant from "tiny-invariant";
+
+import bcrypt from "bcrypt";
 
 import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db/client";
@@ -19,23 +23,43 @@ export const updateIsAdmin = async (email: string) => {
   });
   return user;
 };
+export const findUser = async (email: string) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+  return user;
+};
 
 export const authOptions: NextAuthOptions = {
+  secret: env.NEXTAUTH_SECRET,
+  jwt: {
+    secret: env.NEXTAUTH_SECRET,
+  },
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
-    async session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
-        session.user.isAdmin = user.email === env.USER_ADMIN;
-        session.user.email = user.email;
+    async session({ session, token }) {
+      if (!token) throw new Error("user not found");
 
-        try {
-          await updateIsAdmin(user.email as string);
-        } catch (error) {
-          console.log("object", error);
-        }
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.isAdmin = token.isAdmin as boolean;
+        session.user.email = token.email as string;
       }
 
       return session;
+    },
+    async jwt({ token, user }) {
+      if (!token) throw new Error("user not found");
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.isAdmin = user.email === env.USER_ADMIN;
+      }
+      return token;
     },
   },
 
@@ -60,6 +84,31 @@ export const authOptions: NextAuthOptions = {
           name: profile.name,
           email: profile.email,
         };
+      },
+    }),
+    // we need a credentials provider to be able to login with email or username and password
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        username: { label: "Username", type: "text", placeholder: "jsmith" },
+        email: { label: "Email", type: "email", placeholder: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials, req) {
+        const user = await findUser(credentials?.email as string);
+        if (!user) {
+          throw new Error("No user found");
+        }
+        invariant(user.password, "Password is required");
+        invariant(credentials?.password, "Password is required");
+        // lets check if the password is valid
+        const isPasswordValid = await bcrypt.compare(
+          credentials?.password,
+          user.password
+        );
+
+        return user && isPasswordValid ? user : null;
+        // if the password we have to set the session and return the user
       },
     }),
   ],

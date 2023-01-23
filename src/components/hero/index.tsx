@@ -37,7 +37,7 @@ const Hero = () => {
             <div className="mt-8 flex items-center gap-x-4 sm:justify-center">
               <Button
                 intention={"hero"}
-                href={"/login"}
+                href={"/signup"}
                 EndIcon={IconArrowRight}
               >
                 Get started{" "}

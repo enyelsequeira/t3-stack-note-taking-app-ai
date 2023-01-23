@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import { TRPCError } from "@trpc/server";
 import { UpdateUserSchema } from "./../../../schemas/validations";
 import { router, publicProcedure } from "./../trpc";
@@ -24,7 +25,9 @@ export const user = router({
           message: "User not found",
         });
       }
-      return user;
+
+      const { password, ...rest } = user;
+      return rest;
     }),
   updateById: publicProcedure
     .input(
@@ -61,6 +64,33 @@ export const user = router({
           ...(location && { location }),
         },
       });
+      return user;
+    }),
+
+  // creates a user and sets up in the database
+  create: publicProcedure
+    .input(
+      z.object({
+        username: z.string(),
+        email: z.string(),
+        password: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { username, email, password } = input;
+      const salt = await bcrypt.genSalt(10);
+
+      const hashedPassword = await bcrypt.hash(password, salt);
+
+      const user = await ctx.prisma.user.create({
+        data: {
+          username,
+          email,
+          password: hashedPassword,
+        },
+      });
+      console.log({ user });
+
       return user;
     }),
 });

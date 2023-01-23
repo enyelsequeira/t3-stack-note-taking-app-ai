@@ -5,35 +5,34 @@ import {
   IconBrandFacebook,
   IconBrandGithub,
 } from "@tabler/icons";
-import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/router";
+import { signIn } from "next-auth/react";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]";
 import type { GetServerSideProps } from "next";
-import { trpc } from "@/utils/trpc";
 
-const Sign = () => {
-  const { data: sessionData } = useSession();
-  const createUser = trpc.user.create.useMutation();
-  const router = useRouter();
-  if (sessionData) {
-    router.push("/").then();
-  }
-  console.log({ sessionData });
+const Signup = () => {
   return (
     <Layout>
       <div className="mx-auto mt-20 grid min-h-full	 max-w-7xl grid-cols-2  py-5">
+        <div className="relative hidden min-h-full flex-1 lg:block">
+          <Image
+            width={700}
+            height={700}
+            className="h-full w-full "
+            src={"/personWritting.png"}
+            alt=""
+          />
+        </div>
         <div
           className={
-            "col-span-2 max-w-md justify-self-center lg:col-span-1 lg:justify-self-center"
+            "col-span-2 w-full max-w-md justify-self-center lg:col-span-1 lg:justify-self-center"
           }
         >
           <div>
             <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900">
-              Sign in to your account
+              Sign up to MomoMinder
             </h2>
             <div className="mt-8">
-              <p className="text-sm font-medium text-gray-700">Sign in with</p>
               <div className="mt-2 grid grid-cols-3 gap-3 px-4">
                 <button className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-500 shadow-sm hover:bg-gray-50">
                   <span className="sr-only">Sign in with Facebook</span>
@@ -134,21 +133,7 @@ const Sign = () => {
 
                     <div>
                       <button
-                        // onClick={() =>
-                        //   signIn("credentials", {
-                        //     username: "enyelsequeira",
-                        //     email: "enyelsequeira1994@gmail.com",
-                        //     password: "123456",
-                        //   })
-                        // }
-                        onClick={() =>
-                          createUser.mutate({
-                            email: "enyelsequeira1994@gmail.com",
-                            password: "123456",
-                            username: "enyelsequeira",
-                          })
-                        }
-                        // type="submit"
+                        type="submit"
                         className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                       >
                         Sign in
@@ -160,36 +145,15 @@ const Sign = () => {
             </div>
           </div>
         </div>
-        <div className="relative hidden min-h-full flex-1 lg:block">
-          <Image
-            width={700}
-            height={700}
-            className="h-full w-full "
-            src={"/personWritting.png"}
-            alt=""
-          />
-        </div>
       </div>
-      <button
-        onClick={() =>
-          signIn("credentials", {
-            username: "enyelsequeira",
-            email: "enyelsequeira1994@gmail.com",
-            password: "123456",
-          })
-        }
-      >
-        HELLOW
-      </button>
     </Layout>
   );
 };
 
-export default Sign;
+export default Signup;
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const serverSession = await unstable_getServerSession(req, res, authOptions);
-  console.log({ serverSession });
 
   if (serverSession) {
     return {
