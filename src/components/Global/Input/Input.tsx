@@ -1,4 +1,8 @@
-import type { UseFormReturn } from "react-hook-form";
+import type {
+  FieldValues,
+  UseFormRegister,
+  UseFormReturn,
+} from "react-hook-form";
 
 type Props = {
   label: string;
@@ -9,8 +13,9 @@ type Props = {
   inputClassName?: string;
   labelClassName?: string;
   autoComplete?: string;
-  register: UseFormReturn["register"];
+  register: UseFormRegister<FieldValues> | any;
   error: string | undefined;
+  errorClassName?: string;
 };
 
 const Input = ({
@@ -24,6 +29,7 @@ const Input = ({
   autoComplete,
   register,
   error,
+  errorClassName,
 }: Props) => {
   return (
     <div className={wrapperClassName}>
@@ -37,6 +43,9 @@ const Input = ({
         type={type}
         {...register(name)}
       />
+      {error && (
+        <p className={errorClassName ? errorClassName : "hidden"}>{error}</p>
+      )}
     </div>
   );
 };

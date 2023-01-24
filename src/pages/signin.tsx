@@ -11,6 +11,7 @@ import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]";
 import type { GetServerSideProps } from "next";
 import { trpc } from "@/utils/trpc";
+import { makeToast } from "@/components/Global/Toast/Toast";
 
 const Sign = () => {
   const { data: sessionData } = useSession();
@@ -19,6 +20,7 @@ const Sign = () => {
   if (sessionData) {
     router.push("/").then();
   }
+
   console.log({ sessionData });
   return (
     <Layout>
@@ -141,13 +143,6 @@ const Sign = () => {
                         //     password: "123456",
                         //   })
                         // }
-                        onClick={() =>
-                          createUser.mutate({
-                            email: "enyelsequeira1994@gmail.com",
-                            password: "123456",
-                            username: "enyelsequeira",
-                          })
-                        }
                         // type="submit"
                         className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                       >
@@ -171,13 +166,14 @@ const Sign = () => {
         </div>
       </div>
       <button
-        onClick={() =>
+        onClick={async () => {
           signIn("credentials", {
-            username: "enyelsequeira",
-            email: "enyelsequeira1994@gmail.com",
+            username: "enyelsequeiraaaaa",
+            email: "enyelsequeiaaara1994@gmail.com",
             password: "123456",
-          })
-        }
+            redirect: false,
+          });
+        }}
       >
         HELLOW
       </button>

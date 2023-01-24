@@ -3,54 +3,54 @@
 @tailwind utilities;
 
 .cm-editor {
-    @apply min-h-[400px]
+  @apply min-h-[400px];
 }
 
 .i::before {
-    content: "";
-    position: absolute;
-    width: 0px;
-    height: 0px;
-    opacity: 20%;
-    background: white;
-    /*   background: #3B82F6; */
-    /* Centering */
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    margin: auto;
+  content: "";
+  position: absolute;
+  width: 0px;
+  height: 0px;
+  opacity: 20%;
+  background: white;
+  /*   background: #3B82F6; */
+  /* Centering */
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  margin: auto;
 }
 
 .i:hover:before {
-    animation: anim-in 0.7s forwards ease-out;
+  animation: anim-in 0.7s forwards ease-out;
 }
 
 @keyframes anim-in {
-    100% {
-        opacity: 0;
-        border-radius: 0;
-        width: 600px;
-        height: 600px;
-    }
-    0% {
-        width: 0;
-        height: 0;
-        border-radius: 100%;
-        opacity: 20%;
-    }
+  100% {
+    opacity: 0;
+    border-radius: 0;
+    width: 600px;
+    height: 600px;
+  }
+  0% {
+    width: 0;
+    height: 0;
+    border-radius: 100%;
+    opacity: 20%;
+  }
 }
-.input-wrapper  {
-     background-color: #eee;
-     border: none;
-     padding: 1rem;
-     font-size: 1rem;
-     width: 13em;
-     border-radius: 1rem;
-     color: lightcoral;
-     box-shadow: 0 0.4rem #dfd9d9;
-     cursor: pointer;
- }
+.input-wrapper {
+  background-color: #eee;
+  border: none;
+  padding: 1rem;
+  font-size: 1rem;
+  width: 13em;
+  border-radius: 1rem;
+  color: lightcoral;
+  box-shadow: 0 0.4rem #dfd9d9;
+  cursor: pointer;
+}
 .input-wrapper input:focus {
-    outline-color: lightcoral;
+  outline-color: lightcoral;
 }

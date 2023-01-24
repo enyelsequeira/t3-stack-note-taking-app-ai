@@ -97,3 +97,62 @@ export const UpdateUserSchema = z.object({
 });
 // type
 export type UpdateUserSchemaType = z.infer<typeof UpdateUserSchema>;
+
+export const CreateUser = z
+  .object({
+    username: z
+      .string()
+      .max(50, {
+        message: "Username is too long",
+      })
+      .min(2, {
+        message: "Username is too short",
+      })
+      .transform((value) => value?.trim()),
+    email: z.string().email(),
+    password: z
+      .string()
+      .min(6, {
+        message: "Password must be at least 6 characters",
+      })
+      .max(16, {
+        message: "Password must be at most 16 characters",
+      })
+      .refine(
+        (value) => {
+          return /[a-zA-Z]/.test(value);
+        },
+        {
+          message: "Password must contain at least one letter",
+        }
+      )
+      .refine(
+        (value) => {
+          return /[0-9]/.test(value);
+        },
+        {
+          message: "Password must contain at least one number",
+        }
+      )
+      .refine(
+        (value) => {
+          return /[!@$^?&*]/.test(value);
+        },
+        {
+          message: "Password must contain at least one special character",
+        }
+      ),
+    repeatPassword: z.string(),
+  })
+  .superRefine(({ repeatPassword, password }, ctx) => {
+    if (repeatPassword !== password) {
+      // we need to add the error to the repeatPassword field
+      ctx.addIssue({
+        code: "custom",
+        path: ["repeatPassword"],
+        message: "Passwords do not match",
+      });
+    }
+  });
+
+export type CreateUserType = z.infer<typeof CreateUser>;

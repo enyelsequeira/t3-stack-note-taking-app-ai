@@ -9,8 +9,61 @@ import { signIn } from "next-auth/react";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]";
 import type { GetServerSideProps } from "next";
+import { trpc } from "@/utils/trpc";
+import useZodForm from "@/hooks/use-zod-form";
+import type { CreateUserType } from "@/schemas/validations";
+import { CreateUser } from "@/schemas/validations";
+import Input from "@/components/Global/Input/Input";
+import type { SubmitHandler } from "react-hook-form";
+
+import { input } from "@/utils/classess-constant";
+import { makeToast } from "@/components/Global/Toast/Toast";
+import { useRouter } from "next/router";
 
 const Signup = () => {
+  const router = useRouter();
+  const createUser = trpc.user.create.useMutation({
+    onError: (error) => {
+      makeToast({
+        kind: "error",
+        message: error.message,
+        title: "Error",
+        duration: 500,
+      });
+    },
+  });
+
+  const {
+    formState: { errors },
+    register,
+    handleSubmit,
+  } = useZodForm({
+    schema: CreateUser,
+  });
+  const handleSubmitForm: SubmitHandler<CreateUserType> = async (values) => {
+    createUser.mutate(
+      {
+        ...values,
+      },
+      {
+        onSuccess: () => {
+          makeToast({
+            kind: "success",
+            message: "You have successfully created an account",
+            title: "Success",
+            duration: 500,
+          });
+
+          signIn("credentials", {
+            email: values.email,
+            username: values.email,
+            password: values.password,
+          });
+          router.push("/");
+        },
+      }
+    );
+  };
   return (
     <Layout>
       <div className="mx-auto mt-20 grid min-h-full	 max-w-7xl grid-cols-2  py-5">
@@ -20,7 +73,7 @@ const Signup = () => {
             height={700}
             className="h-full w-full "
             src={"/personWritting.png"}
-            alt=""
+            alt="personal writing"
           />
         </div>
         <div
@@ -68,42 +121,55 @@ const Signup = () => {
                   </div>
                 </div>
                 <div>
-                  <form action="#" method="POST" className="space-y-6">
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Email address
-                      </label>
-                      <div className="mt-1">
-                        <input
-                          id="email"
-                          name="email"
-                          type="email"
-                          autoComplete="email"
-                          className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                        />
-                      </div>
-                    </div>
+                  <form
+                    onSubmit={handleSubmit(handleSubmitForm)}
+                    className="space-y-6"
+                  >
+                    <Input
+                      errorClassName={input.error}
+                      labelClassName={input.label}
+                      inputClassName={input.input(errors?.username?.message)}
+                      type="text"
+                      label="username"
+                      error={errors?.username?.message}
+                      placeholder="Username"
+                      wrapperClassName=""
+                      register={register}
+                      name="username"
+                      key={errors?.username?.message}
+                    />
+                    <Input
+                      errorClassName={input.error}
+                      labelClassName={input.label}
+                      inputClassName={input.input(errors?.username?.message)}
+                      placeholder="Email address"
+                      type="email"
+                      label="Email address"
+                      register={register}
+                      error={errors?.email?.message}
+                      name="email"
+                    />
 
-                    <div className="space-y-1">
-                      <label
-                        htmlFor="password"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Password
-                      </label>
-                      <div className="mt-1">
-                        <input
-                          id="password"
-                          name="password"
-                          type="password"
-                          autoComplete="current-password"
-                          className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                        />
-                      </div>
-                    </div>
+                    <Input
+                      errorClassName={input.error}
+                      labelClassName={input.label}
+                      inputClassName={input.input(errors?.username?.message)}
+                      label="Password"
+                      type="password"
+                      error={errors?.password?.message}
+                      register={register}
+                      name="password"
+                    />
+                    <Input
+                      errorClassName={input.error}
+                      labelClassName={input.label}
+                      inputClassName={input.input(errors?.username?.message)}
+                      label="Repeat Password"
+                      type="password"
+                      register={register}
+                      error={errors?.repeatPassword?.message}
+                      name="repeatPassword"
+                    />
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">

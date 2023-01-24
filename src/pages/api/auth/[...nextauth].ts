@@ -1,3 +1,4 @@
+import { makeToast } from "@/components/Global/Toast/Toast";
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import GitHubProvider from "next-auth/providers/github";
@@ -23,12 +24,28 @@ export const updateIsAdmin = async (email: string) => {
   });
   return user;
 };
-export const findUser = async (email: string) => {
-  const user = await prisma.user.findUnique({
+export const findUser = async (email: string, username: string) => {
+  const user = await prisma.user.findFirst({
     where: {
-      email,
+      OR: [
+        {
+          username,
+        },
+        {
+          email,
+        },
+      ],
     },
   });
+
+  if (!user) {
+    makeToast({
+      title: "Error",
+      message: "User not found",
+      kind: "error",
+      duration: 5000,
+    });
+  }
   return user;
 };
 
@@ -61,11 +78,13 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
+    // if error is thrown, it will be caught by the error handler
   },
 
   adapter: PrismaAdapter(prisma),
   pages: {
     signIn: "/signin",
+    error: "/signin",
   },
 
   providers: [
@@ -95,10 +114,11 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        const user = await findUser(credentials?.email as string);
-        if (!user) {
-          throw new Error("No user found");
-        }
+        const user = await findUser(
+          credentials?.email as string,
+          credentials?.username as string
+        );
+
         invariant(user.password, "Password is required");
         invariant(credentials?.password, "Password is required");
         // lets check if the password is valid
