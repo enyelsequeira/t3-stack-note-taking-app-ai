@@ -82,22 +82,14 @@ const Sign = () => {
                   <IconBrandFacebook className="h-5 w-5" />
                 </button>
                 <button
-                  onClick={() =>
-                    signIn("github", {
-                      callbackUrl: window.location.href,
-                    })
-                  }
+                  onClick={() => signIn("github")}
                   className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-500 shadow-sm hover:bg-gray-50"
                 >
                   <span className="sr-only">Sign in with Github</span>
                   <IconBrandGithub className="h-5 w-5" />
                 </button>
                 <button
-                  onClick={() =>
-                    signIn("discord", {
-                      callbackUrl: "/",
-                    })
-                  }
+                  onClick={() => signIn("discord")}
                   className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-500 shadow-sm hover:bg-gray-50"
                 >
                   <span className="sr-only">Sign in with Twitch</span>
