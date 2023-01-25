@@ -24,16 +24,12 @@ export const updateIsAdmin = async (email: string) => {
   return user;
 };
 export const findUser = async (email: string, username: string) => {
+  // we have to match both email and username
   const user = await prisma.user.findFirst({
+    // both email and username must match
     where: {
-      OR: [
-        {
-          username,
-        },
-        {
-          email,
-        },
-      ],
+      email,
+      username,
     },
   });
 
@@ -104,6 +100,7 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "email", placeholder: "email" },
         password: { label: "Password", type: "password" },
       },
+
       async authorize(credentials, req) {
         const user = await findUser(
           credentials?.email as string,
