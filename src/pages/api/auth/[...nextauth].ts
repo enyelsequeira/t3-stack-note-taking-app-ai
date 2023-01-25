@@ -58,7 +58,7 @@ export const authOptions: NextAuthOptions = {
         session.user.isAdmin = token.isAdmin as boolean;
         session.user.email = token.email as string;
       }
-
+      // test
       return session;
     },
     async jwt({ token, user }) {
