@@ -70,9 +70,8 @@ export const user = router({
   // creates a user and sets up in the database
   create: publicProcedure.input(CreateUser).mutation(async ({ ctx, input }) => {
     const { username, email, password } = input;
-    const salt = await bcrypt.genSalt(10);
 
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, 10);
     // check if username or email already exists
     const userExists = await ctx.prisma.user.findFirst({
       where: {

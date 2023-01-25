@@ -106,13 +106,10 @@ export const authOptions: NextAuthOptions = {
           credentials?.email as string,
           credentials?.username as string
         );
-        invariant(user?.password, "Password is required");
-
-        invariant(credentials?.password, "Password is required");
 
         const isPasswordValid = await bcrypt.compare(
-          credentials.password,
-          user.password as string
+          credentials?.password as string,
+          user?.password as string
         );
 
         return isPasswordValid ? user : null;

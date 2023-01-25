@@ -44,20 +44,29 @@ const Signup = () => {
         ...values,
       },
       {
-        onSuccess: () => {
+        onSuccess: async (data) => {
+          console.log("THIS IS SUCCESSFULE", data);
           makeToast({
             kind: "success",
             message: "You have successfully created an account",
             title: "Success",
             duration: 500,
           });
-
-          signIn("credentials", {
-            email: values.email,
-            username: values.email,
+          const res = await signIn("credentials", {
+            email: data.email,
+            username: data.email,
             password: values.password,
+            redirect: false,
           });
-          router.push("/");
+          if (!res?.ok) {
+            makeToast({
+              kind: "error",
+              message: "Something went wrong when signing in",
+              title: "Error",
+              duration: 500,
+            });
+          }
+          router.push("/").then();
         },
       }
     );
