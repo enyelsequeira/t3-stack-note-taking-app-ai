@@ -102,14 +102,13 @@ export const authOptions: NextAuthOptions = {
       },
 
       async authorize(credentials, req) {
-        const user = await findUser(
-          credentials?.email as string,
-          credentials?.username as string
-        );
-
+        invariant(credentials, "credentials are required");
+        const user = await findUser(credentials?.email, credentials?.username);
+        invariant(user, "user not found");
+        invariant(user?.password, "password not found");
         const isPasswordValid = await bcrypt.compare(
-          credentials?.password as string,
-          user?.password as string
+          credentials?.password,
+          user?.password
         );
 
         return isPasswordValid ? user : null;

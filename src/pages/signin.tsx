@@ -45,7 +45,6 @@ const Sign = () => {
       password: data.password,
       redirect: false,
     });
-    console.log({ values });
 
     if (!values?.ok) {
       makeToast({
@@ -59,7 +58,6 @@ const Sign = () => {
       });
     }
   };
-  console.log({ value: watch(), errors });
 
   return (
     <Layout>
