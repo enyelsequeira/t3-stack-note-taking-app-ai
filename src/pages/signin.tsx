@@ -12,16 +12,56 @@ import { authOptions } from "./api/auth/[...nextauth]";
 import type { GetServerSideProps } from "next";
 import { trpc } from "@/utils/trpc";
 import { makeToast } from "@/components/Global/Toast/Toast";
+import useZodForm from "@/hooks/use-zod-form";
+import { SignInUser, SignInUserType } from "@/schemas/validations";
+import Input from "@/components/Global/Input/Input";
+import { SubmitHandler } from "react-hook-form";
+import { input } from "@/utils/classess-constant";
 
 const Sign = () => {
   const { data: sessionData } = useSession();
-  const createUser = trpc.user.create.useMutation();
+
+  const {
+    register,
+    formState: { errors },
+    watch,
+    handleSubmit,
+  } = useZodForm({
+    schema: SignInUser,
+    defaultValues: {
+      username: undefined,
+      email: undefined,
+      password: undefined,
+    },
+  });
   const router = useRouter();
   if (sessionData) {
     router.push("/").then();
   }
 
-  console.log({ sessionData });
+  const handleSignin: SubmitHandler<SignInUserType> = async (data) => {
+    const values = await signIn("credentials", {
+      username: data.username,
+      email: data.email,
+      password: data.password,
+      redirect: false,
+    });
+    console.log({ values });
+
+    if (!values?.ok) {
+      makeToast({
+        kind: "error",
+        message:
+          values?.error === "CredentialsSignin"
+            ? "Wrong username or password"
+            : (values?.error as string),
+        title: "Error",
+        duration: 500,
+      });
+    }
+  };
+  console.log({ value: watch(), errors });
+
   return (
     <Layout>
       <div className="mx-auto mt-20 grid min-h-full	 max-w-7xl grid-cols-2  py-5">
@@ -71,84 +111,46 @@ const Sign = () => {
                   </div>
                 </div>
                 <div>
-                  <form action="#" method="POST" className="space-y-6">
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Email address
-                      </label>
-                      <div className="mt-1">
-                        <input
-                          id="email"
-                          name="email"
-                          type="email"
-                          autoComplete="email"
-                          className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                        />
-                      </div>
-                    </div>
+                  <form
+                    onSubmit={handleSubmit(handleSignin)}
+                    className="space-y-6"
+                  >
+                    <Input
+                      register={register}
+                      error={errors.email?.message}
+                      name="email"
+                      label="Email address"
+                      type="email"
+                      autoComplete="email"
+                      labelClassName={input.label}
+                      inputClassName={input.input(errors.email?.message)}
+                      errorClassName={input.error}
+                      placeholder="Email Address"
+                    />
+                    <Input
+                      register={register}
+                      error={errors.username?.message}
+                      name="username"
+                      label="Username"
+                      type="text"
+                      labelClassName={input.label}
+                      inputClassName={input.input(errors.username?.message)}
+                      errorClassName={input.error}
+                      placeholder="Username"
+                    />
 
-                    <div className="space-y-1">
-                      <label
-                        htmlFor="password"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Password
-                      </label>
-                      <div className="mt-1">
-                        <input
-                          id="password"
-                          name="password"
-                          type="password"
-                          autoComplete="current-password"
-                          className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <input
-                          id="remember-me"
-                          name="remember-me"
-                          type="checkbox"
-                          className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                        />
-                        <label
-                          htmlFor="remember-me"
-                          className="ml-2 block text-sm text-gray-900"
-                        >
-                          Remember me
-                        </label>
-                      </div>
-
-                      <div className="text-sm">
-                        <a
-                          href="#"
-                          className="font-medium text-indigo-600 hover:text-indigo-500"
-                        >
-                          Forgot your password?
-                        </a>
-                      </div>
-                    </div>
-
-                    <div>
-                      <button
-                        // onClick={() =>
-                        //   signIn("credentials", {
-                        //     username: "enyelsequeira",
-                        //     email: "enyelsequeira1994@gmail.com",
-                        //     password: "123456",
-                        //   })
-                        // }
-                        // type="submit"
-                        className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                      >
-                        Sign in
-                      </button>
-                    </div>
+                    <Input
+                      register={register}
+                      error={errors.password?.message}
+                      name="password"
+                      label="Password"
+                      type="password"
+                      labelClassName={input.label}
+                      inputClassName={input.input(errors.password?.message)}
+                      errorClassName={input.error}
+                      placeholder="Password"
+                    />
+                    <button type="submit">SING</button>
                   </form>
                 </div>
               </div>
@@ -165,18 +167,6 @@ const Sign = () => {
           />
         </div>
       </div>
-      <button
-        onClick={async () => {
-          signIn("credentials", {
-            username: "enyelsequeiraaaaa",
-            email: "enyelsequeiaaara1994@gmail.com",
-            password: "123456",
-            redirect: false,
-          });
-        }}
-      >
-        HELLOW
-      </button>
     </Layout>
   );
 };
@@ -202,3 +192,23 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     },
   };
 };
+
+// <div className="flex items-center justify-between">
+//   <div className="flex items-center">
+//     <input
+//       id="remember-me"
+//       name="remember-me"
+//       type="checkbox"
+//       className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+//     />
+//     <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+//       Remember me
+//     </label>
+//   </div>
+
+//   <div className="text-sm">
+//     <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
+//       Forgot your password?
+//     </a>
+//   </div>
+// </div>;

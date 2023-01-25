@@ -6,8 +6,6 @@ import {
   IconBrandGithub,
 } from "@tabler/icons";
 import { signIn } from "next-auth/react";
-import { unstable_getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]";
 import type { GetServerSideProps } from "next";
 import { trpc } from "@/utils/trpc";
 import useZodForm from "@/hooks/use-zod-form";
@@ -217,22 +215,3 @@ const Signup = () => {
 };
 
 export default Signup;
-
-export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
-  const serverSession = await unstable_getServerSession(req, res, authOptions);
-
-  if (serverSession) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {
-      serverSession,
-    },
-  };
-};

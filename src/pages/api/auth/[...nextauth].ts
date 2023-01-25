@@ -1,4 +1,3 @@
-import { makeToast } from "@/components/Global/Toast/Toast";
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import GitHubProvider from "next-auth/providers/github";
@@ -38,14 +37,7 @@ export const findUser = async (email: string, username: string) => {
     },
   });
 
-  if (!user) {
-    makeToast({
-      title: "Error",
-      message: "User not found",
-      kind: "error",
-      duration: 5000,
-    });
-  }
+  if (!user) throw new Error("user not found");
   return user;
 };
 
@@ -118,17 +110,16 @@ export const authOptions: NextAuthOptions = {
           credentials?.email as string,
           credentials?.username as string
         );
+        invariant(user?.password, "Password is required");
 
-        invariant(user.password, "Password is required");
         invariant(credentials?.password, "Password is required");
-        // lets check if the password is valid
+
         const isPasswordValid = await bcrypt.compare(
-          credentials?.password,
-          user.password
+          credentials.password,
+          user.password as string
         );
 
-        return user && isPasswordValid ? user : null;
-        // if the password we have to set the session and return the user
+        return isPasswordValid ? user : null;
       },
     }),
   ],
