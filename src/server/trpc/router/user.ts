@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { TRPCError } from "@trpc/server";
-import { CreateUser, UpdateUserSchema } from "./../../../schemas/validations";
+import { UpdateUserSchema } from "./../../../schemas/validations";
 import { router, publicProcedure } from "./../trpc";
 import { z } from "zod";
 
@@ -66,44 +66,4 @@ export const user = router({
       });
       return user;
     }),
-
-  // creates a user and sets up in the database
-  create: publicProcedure.input(CreateUser).mutation(async ({ ctx, input }) => {
-    const { username, email, password } = input;
-    const salt = await bcrypt.genSalt(10);
-
-    const hashedPassword = await bcrypt.hash(password, salt);
-    // check if username or email already exists
-    const userExists = await ctx.prisma.user.findFirst({
-      where: {
-        OR: [
-          {
-            username,
-          },
-          {
-            email,
-          },
-        ],
-      },
-    });
-
-    if (userExists) {
-      throw new TRPCError({
-        message: "Username or email already exists",
-        code: "BAD_REQUEST",
-      });
-    }
-
-    const user = await ctx.prisma.user.create({
-      data: {
-        username,
-        email,
-        password: hashedPassword,
-      },
-    });
-
-    console.log({ user });
-
-    return user;
-  }),
 });

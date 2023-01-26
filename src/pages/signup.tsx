@@ -5,9 +5,7 @@ import {
   IconBrandFacebook,
   IconBrandGithub,
 } from "@tabler/icons";
-import { signIn } from "next-auth/react";
-import type { GetServerSideProps } from "next";
-import { trpc } from "@/utils/trpc";
+import { signIn, useSession } from "next-auth/react";
 import useZodForm from "@/hooks/use-zod-form";
 import type { CreateUserType } from "@/schemas/validations";
 import { CreateUser } from "@/schemas/validations";
@@ -15,22 +13,16 @@ import Input from "@/components/Global/Input/Input";
 import type { SubmitHandler } from "react-hook-form";
 
 import { input } from "@/utils/classess-constant";
-import { makeToast } from "@/components/Global/Toast/Toast";
 import { useRouter } from "next/router";
 
 const Signup = () => {
   const router = useRouter();
-  const createUser = trpc.user.create.useMutation({
-    onError: (error) => {
-      makeToast({
-        kind: "error",
-        message: error.message,
-        title: "Error",
-        duration: 500,
-      });
-    },
-  });
 
+  const { data } = useSession();
+
+  if (data?.user) {
+    router.push("/").then();
+  }
   const {
     formState: { errors },
     register,
@@ -39,37 +31,9 @@ const Signup = () => {
     schema: CreateUser,
   });
   const handleSubmitForm: SubmitHandler<CreateUserType> = async (values) => {
-    createUser.mutate(
-      {
-        ...values,
-      },
-      {
-        onSuccess: async (data) => {
-          console.log("THIS IS SUCCESSFULE", data);
-          makeToast({
-            kind: "success",
-            message: "You have successfully created an account",
-            title: "Success",
-            duration: 500,
-          });
-          const res = await signIn("credentials", {
-            email: data.email,
-            username: data.email,
-            password: values.password,
-            redirect: false,
-          });
-          if (!res?.ok) {
-            makeToast({
-              kind: "error",
-              message: "Something went wrong when signing in",
-              title: "Error",
-              duration: 500,
-            });
-          }
-          router.push("/").then();
-        },
-      }
-    );
+    await signIn("email", {
+      email: values.email,
+    });
   };
   return (
     <Layout>
@@ -135,47 +99,13 @@ const Signup = () => {
                     <Input
                       errorClassName={input.error}
                       labelClassName={input.label}
-                      inputClassName={input.input(errors?.username?.message)}
-                      type="text"
-                      label="username"
-                      error={errors?.username?.message}
-                      placeholder="Username"
-                      wrapperClassName=""
-                      register={register}
-                      name="username"
-                      key={errors?.username?.message}
-                    />
-                    <Input
-                      errorClassName={input.error}
-                      labelClassName={input.label}
-                      inputClassName={input.input(errors?.username?.message)}
+                      inputClassName={input.input(errors?.email?.message)}
                       placeholder="Email address"
                       type="email"
                       label="Email address"
                       register={register}
                       error={errors?.email?.message}
                       name="email"
-                    />
-
-                    <Input
-                      errorClassName={input.error}
-                      labelClassName={input.label}
-                      inputClassName={input.input(errors?.username?.message)}
-                      label="Password"
-                      type="password"
-                      error={errors?.password?.message}
-                      register={register}
-                      name="password"
-                    />
-                    <Input
-                      errorClassName={input.error}
-                      labelClassName={input.label}
-                      inputClassName={input.input(errors?.username?.message)}
-                      label="Repeat Password"
-                      type="password"
-                      register={register}
-                      error={errors?.repeatPassword?.message}
-                      name="repeatPassword"
                     />
 
                     <div className="flex items-center justify-between">
@@ -193,15 +123,6 @@ const Signup = () => {
                           Remember me
                         </label>
                       </div>
-
-                      <div className="text-sm">
-                        <a
-                          href="#"
-                          className="font-medium text-indigo-600 hover:text-indigo-500"
-                        >
-                          Forgot your password?
-                        </a>
-                      </div>
                     </div>
 
                     <div>
@@ -209,7 +130,7 @@ const Signup = () => {
                         type="submit"
                         className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                       >
-                        Sign in
+                        Sign up
                       </button>
                     </div>
                   </form>

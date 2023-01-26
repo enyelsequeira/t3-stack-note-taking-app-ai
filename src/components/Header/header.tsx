@@ -16,6 +16,12 @@ export const navigation = [
 const Header = () => {
   const { data: sessionData } = useSession();
   const utils = trpc.useContext();
+  const { data } = trpc.user.byId.useQuery(
+    {
+      id: sessionData?.user?.id as string,
+    },
+    { enabled: !!sessionData?.user?.id }
+  );
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -71,7 +77,8 @@ const Header = () => {
                   href={`/profile/${sessionData.user?.id}`}
                   className="mx-2 inline-block rounded-lg px-3 py-1.5 text-sm font-semibold leading-6 text-gray-900 shadow-sm ring-1 ring-gray-900/10 hover:ring-gray-900/20"
                 >
-                  Welcome {sessionData?.user?.name}
+                  Welcome{" "}
+                  {sessionData?.user?.name ?? data?.username?.slice(0, 5)}
                 </Button>
 
                 <Button

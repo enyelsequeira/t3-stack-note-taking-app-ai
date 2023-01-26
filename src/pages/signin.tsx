@@ -10,7 +10,6 @@ import { useRouter } from "next/router";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]";
 import type { GetServerSideProps } from "next";
-import { makeToast } from "@/components/Global/Toast/Toast";
 import useZodForm from "@/hooks/use-zod-form";
 import { SignInUser, SignInUserType } from "@/schemas/validations";
 import Input from "@/components/Global/Input/Input";
@@ -23,14 +22,11 @@ const Sign = () => {
   const {
     register,
     formState: { errors },
-    watch,
     handleSubmit,
   } = useZodForm({
     schema: SignInUser,
     defaultValues: {
-      username: undefined,
       email: undefined,
-      password: undefined,
     },
   });
   const router = useRouter();
@@ -38,25 +34,10 @@ const Sign = () => {
     router.push("/").then();
   }
 
-  const handleSignin: SubmitHandler<SignInUserType> = async (data) => {
-    const values = await signIn("credentials", {
-      username: data.username,
-      email: data.email,
-      password: data.password,
-      redirect: false,
+  const handleSignInEmail: SubmitHandler<SignInUserType> = async (values) => {
+    await signIn("email", {
+      email: values.email,
     });
-
-    if (!values?.ok) {
-      makeToast({
-        kind: "error",
-        message:
-          values?.error === "CredentialsSignin"
-            ? "Wrong username or password"
-            : (values?.error as string),
-        title: "Error",
-        duration: 500,
-      });
-    }
   };
 
   return (
@@ -108,10 +89,7 @@ const Sign = () => {
                   </div>
                 </div>
                 <div>
-                  <form
-                    onSubmit={handleSubmit(handleSignin)}
-                    className="space-y-6"
-                  >
+                  <form onSubmit={handleSubmit(handleSignInEmail)}>
                     <Input
                       register={register}
                       error={errors.email?.message}
@@ -124,30 +102,13 @@ const Sign = () => {
                       errorClassName={input.error}
                       placeholder="Email Address"
                     />
-                    <Input
-                      register={register}
-                      error={errors.username?.message}
-                      name="username"
-                      label="Username"
-                      type="text"
-                      labelClassName={input.label}
-                      inputClassName={input.input(errors.username?.message)}
-                      errorClassName={input.error}
-                      placeholder="Username"
-                    />
 
-                    <Input
-                      register={register}
-                      error={errors.password?.message}
-                      name="password"
-                      label="Password"
-                      type="password"
-                      labelClassName={input.label}
-                      inputClassName={input.input(errors.password?.message)}
-                      errorClassName={input.error}
-                      placeholder="Password"
-                    />
-                    <button type="submit">SING</button>
+                    <button
+                      type="submit"
+                      className="mt-6 flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    >
+                      SIGN IN
+                    </button>
                   </form>
                 </div>
               </div>

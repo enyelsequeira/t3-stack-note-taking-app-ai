@@ -6,6 +6,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 // Prisma adapter for NextAuth, optional and can be removed
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import invariant from "tiny-invariant";
+import EmailProvider from "next-auth/providers/email";
 
 import bcrypt from "bcrypt";
 
@@ -39,34 +40,23 @@ export const findUser = async (email: string, username: string) => {
 
 export const authOptions: NextAuthOptions = {
   secret: env.NEXTAUTH_SECRET,
-  jwt: {
-    secret: env.NEXTAUTH_SECRET,
-  },
-  session: {
-    strategy: "jwt",
-  },
-  callbacks: {
-    async session({ session, token }) {
-      if (!token) throw new Error("user not found");
 
+  callbacks: {
+    async session({ session, user }) {
+      console.log({ SESSION: session, USER: user });
       if (session.user) {
-        session.user.id = token.id as string;
-        session.user.isAdmin = token.isAdmin as boolean;
-        session.user.email = token.email as string;
+        session.user.id = user.id;
+        session.user.email = user.email;
       }
-      // test
       return session;
     },
-    async jwt({ token, user }) {
-      if (!token) throw new Error("user not found");
-      if (user) {
-        token.id = user.id;
-        token.email = user.email;
-        token.isAdmin = user.email === env.USER_ADMIN;
+    async signIn({ user, account, profile, email, credentials }) {
+      // lets check is the user.email is env.ADMIN_EMAIL and if so, we will update the user to be an admin
+      if (user.email === env.USER_ADMIN) {
+        await updateIsAdmin(user?.email as string);
       }
-      return token;
+      return true;
     },
-    // if error is thrown, it will be caught by the error handler
   },
 
   adapter: PrismaAdapter(prisma),
@@ -84,36 +74,40 @@ export const authOptions: NextAuthOptions = {
       clientId: env.GITHUB_CLIENT_ID,
       clientSecret: env.GITHUB_CLIENT_SECRET,
       allowDangerousEmailAccountLinking: true,
-      profile(profile) {
-        return {
-          id: profile.id,
-          name: profile.name,
-          email: profile.email,
-        };
+    }),
+    EmailProvider({
+      server: {
+        host: process.env.EMAIL_SERVER_HOST,
+        port: process.env.EMAIL_SERVER_PORT,
+        auth: {
+          user: process.env.EMAIL_SERVER_USER,
+          pass: process.env.EMAIL_SERVER_PASSWORD,
+        },
       },
+      from: process.env.EMAIL_FROM,
     }),
     // we need a credentials provider to be able to login with email or username and password
-    CredentialsProvider({
-      name: "credentials",
-      credentials: {
-        username: { label: "Username", type: "text", placeholder: "jsmith" },
-        email: { label: "Email", type: "email", placeholder: "email" },
-        password: { label: "Password", type: "password" },
-      },
+    // CredentialsProvider({
+    //   name: "credentials",
+    //   credentials: {
+    //     username: { label: "Username", type: "text", placeholder: "jsmith" },
+    //     email: { label: "Email", type: "email", placeholder: "email" },
+    //     password: { label: "Password", type: "password" },
+    //   },
 
-      async authorize(credentials, req) {
-        invariant(credentials, "credentials are required");
-        const user = await findUser(credentials?.email, credentials?.username);
-        invariant(user, "user not found");
-        invariant(user?.password, "password not found");
-        const isPasswordValid = await bcrypt.compare(
-          credentials?.password,
-          user?.password
-        );
+    //   async authorize(credentials, req) {
+    //     invariant(credentials, "credentials are required");
+    //     const user = await findUser(credentials?.email, credentials?.username);
+    //     invariant(user, "user not found");
+    //     invariant(user?.password, "password not found");
+    //     const isPasswordValid = await bcrypt.compare(
+    //       credentials?.password,
+    //       user?.password
+    //     );
 
-        return isPasswordValid ? user : null;
-      },
-    }),
+    //     return isPasswordValid ? user : null;
+    //   },
+    // }),
   ],
 };
 
