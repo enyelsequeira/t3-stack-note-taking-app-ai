@@ -1,4 +1,4 @@
-import NextAuth, { type NextAuthOptions } from "next-auth";
+import NextAuth, { Theme, type NextAuthOptions } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import GitHubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -7,6 +7,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import invariant from "tiny-invariant";
 import EmailProvider from "next-auth/providers/email";
+import { createTransport } from "nodemailer";
 
 import bcrypt from "bcrypt";
 
@@ -43,14 +44,13 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async session({ session, user }) {
-      console.log({ SESSION: session, USER: user });
       if (session.user) {
         session.user.id = user.id;
         session.user.email = user.email;
       }
       return session;
     },
-    async signIn({ user, account, profile, email, credentials }) {
+    async signIn({ user }) {
       // lets check is the user.email is env.ADMIN_EMAIL and if so, we will update the user to be an admin
       if (user.email === env.USER_ADMIN) {
         await updateIsAdmin(user?.email as string);
@@ -78,14 +78,52 @@ export const authOptions: NextAuthOptions = {
     EmailProvider({
       server: {
         host: process.env.EMAIL_SERVER_HOST,
-        port: process.env.EMAIL_SERVER_PORT,
+        port: process.env.EMAIL_SERVER_PORT as any,
         auth: {
           user: process.env.EMAIL_SERVER_USER,
           pass: process.env.EMAIL_SERVER_PASSWORD,
         },
       },
+      async sendVerificationRequest({
+        identifier: email,
+        url,
+        provider: { server, from },
+      }) {
+        return new Promise((resolve, reject) => {
+          const transporter = createTransport(server);
+          const message = {
+            from,
+            to: email,
+            subject: "Sign in to Memominder App",
+            text: `Sign To Memominder: ${url}`,
+            html: `
+            <div style="background-color: #f5f5f5; padding: 20px; 
+            display: flex; justify-content: center; align-items: center;
+            ">
+
+            <div style="background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; 
+            flex-direction: column;
+            ">
+              <h1 style="margin: 0; font-size: 24px; font-weight: 500; color: #333;">Sign in to Memominder App</h1>
+              <p style="margin: 0; font-size: 16px; font-weight: 400; color: #333;">Click the button below to sign in to your account.</p>
+              <a target="_blank" href="${url}" style="display: inline-block; margin: 20px 0; padding: 10px 20px; background-color: #333; color: #fff; border-radius: 5px; text-decoration: none;">Sign in</a>
+            </div>
+            </div>
+            `,
+          };
+          transporter.sendMail(message, (error: any, info: any) => {
+            if (error) {
+              console.error("SEND_VERIFICATION_EMAIL_ERROR", email, error);
+              return reject(new Error("SEND_VERIFICATION_EMAIL_ERROR", error));
+            }
+            console.log("SEND_VERIFICATION_EMAIL", email, info.envelope);
+            return resolve();
+          });
+        });
+      },
       from: process.env.EMAIL_FROM,
     }),
+
     // we need a credentials provider to be able to login with email or username and password
     // CredentialsProvider({
     //   name: "credentials",
