@@ -50,18 +50,17 @@ model User {
   emailVerified DateTime?
   image         String?
   isAdmin       Boolean   @default(false)
+  firstName     String?
+  lastName      String?
+  username      String?   @unique
+  bio           String?
+  location      String?
+  portfolio     String?
+  profileUrl    String?
   accounts      Account[]
   Comment       Comment[]
   Post          Post[]
   Session       Session[]
-  firstName     String?
-  lastName      String?
-  password      String?
-  username      String?   @unique
-  profileUrl    String?
-  bio           String?
-  location      String?
-  portfolio     String?
 }
 
 model Post {

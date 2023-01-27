@@ -1,15 +1,11 @@
-import NextAuth, { Theme, type NextAuthOptions } from "next-auth";
+import NextAuth, { type NextAuthOptions } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import GitHubProvider from "next-auth/providers/github";
-import CredentialsProvider from "next-auth/providers/credentials";
 
 // Prisma adapter for NextAuth, optional and can be removed
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import invariant from "tiny-invariant";
 import EmailProvider from "next-auth/providers/email";
 import { createTransport } from "nodemailer";
-
-import bcrypt from "bcrypt";
 
 import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db/client";
@@ -23,6 +19,7 @@ export const updateIsAdmin = async (email: string) => {
       isAdmin: true,
     },
   });
+  if (!user) throw new Error("user not found");
   return user;
 };
 export const findUser = async (email: string, username: string) => {

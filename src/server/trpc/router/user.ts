@@ -45,7 +45,10 @@ export const user = router({
         location,
         bio,
         portfolio,
+        image,
       } = input.values;
+
+      console.log(input.values, "🌞 cool image");
 
       const user = await ctx.prisma.user.update({
         where: {
@@ -62,8 +65,32 @@ export const user = router({
           ...(profileUrl && { profileUrl }),
 
           ...(location && { location }),
+          ...(image && { image }),
         },
       });
       return user;
     }),
 });
+//  ImageListType,
+// if (!uploadError) {
+// const { data: updateData } = await supabase.storage
+//   .from("profile-images")
+//   .getPublicUrl(`${router.query.id}-profile`);
+//   console.log({ updateData });
+//   mutateUser.mutate(
+//     {
+//       id: id as string,
+//       values: {
+//         image: updateData.publicUrl,
+//       },
+//     },
+//     {
+//       onSuccess: (prev) => {
+//         console.log({ prev });
+
+//         // router.reload();
+//         // dont do a hard refresh only mutate the user
+//       },
+//     }
+//   );
+// }

@@ -94,6 +94,8 @@ export const UpdateUserSchema = z.object({
     .optional()
     .transform((value) => value?.trim()),
   portfolio: z.union([z.literal(""), z.string().url()]).optional(),
+  // image
+  image: z.union([z.literal(""), z.string().url()]).optional(),
 });
 // type
 export type UpdateUserSchemaType = z.infer<typeof UpdateUserSchema>;

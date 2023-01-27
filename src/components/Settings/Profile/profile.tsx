@@ -13,9 +13,43 @@ import Input from "../../Global/Input/Input";
 import Text from "../../Global/Text/Text";
 import { getNames, getName } from "country-list";
 import { useEffect, useState } from "react";
+import type { ImageListType } from "react-images-uploading";
+import ImageUploading from "react-images-uploading";
+import { supabase } from "@/utils/supabase";
+import { makeToast } from "@/components/Global/Toast/Toast";
+import invariant from "tiny-invariant";
 
 const ProfileBasicInfo = () => {
   const router = useRouter();
+  const [images, setImages] = useState([]);
+
+  const imageUpload = async (
+    imageList: ImageListType,
+    addUpdateIndex: number[] | undefined
+  ) => {
+    // data for submit
+    console.log({ imageList, addUpdateIndex });
+    console.log({ file: imageList?.[0]?.file });
+    try {
+      invariant(imageList?.[0]?.file, "No file found");
+      console.log({ file: imageList[0].file });
+
+      const { data, error } = await supabase.storage
+        .from("profile-images")
+        .upload(`${router.query.id}-profile`, imageList[0].file);
+
+      console.log({ data, error });
+    } catch (error) {
+      makeToast({
+        kind: "error",
+        title: "Error",
+        message: "Error uploading image",
+      });
+    }
+
+    setImages(imageList as never[]);
+  };
+
   const { id } = router.query;
   const utils = trpc.useContext().user;
 
@@ -70,7 +104,8 @@ const ProfileBasicInfo = () => {
     }
   }, [isLoading, data?.location]);
 
-  console.log({ errors: methods.formState.errors });
+  console.log({ url: data?.image });
+
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(handleSubmitForm)}>
@@ -184,17 +219,127 @@ const ProfileBasicInfo = () => {
                 </div>
               </div>
 
-              <div className="relative hidden overflow-hidden rounded-full lg:block">
+              {data && (
+                <ImageUploading
+                  value={images}
+                  onChange={async (d: any) => {
+                    // console.log("onChange", d[0].file);
+                    // we have to delete the image from the server and upload a new one
+                    // we can't just update the image using supabase
+                    const { data, error } = await supabase.storage
+                      .from("profile-images")
+                      .remove([`${router.query.id}-profile`]);
+                    console.log(
+                      { first: data, error },
+                      "========REMOVE ======="
+                    );
+                    if (error) {
+                      makeToast({
+                        title: "Error",
+                        message: error.message,
+                        kind: "error",
+                        duration: 600,
+                      });
+                      throw new Error(error.message);
+                    }
+                    const { data: uploadData, error: uploadError } =
+                      await supabase.storage
+                        .from("profile-images")
+                        .upload(`${router.query.id}-profile`, d[0]?.file);
+                    console.log(
+                      { secod: uploadData, uploadError },
+                      "======== UPLOAD ======="
+                    );
+                    if (uploadData) {
+                      const { data: updateData } = supabase.storage
+                        .from("profile-images")
+                        .getPublicUrl(`${router.query.id}-profile`);
+                      console.log({ updateData }, "======== UPDATE =======");
+                      console.log({ PPPPPPPPPP: updateData.publicUrl });
+                      mutateUser.mutate(
+                        {
+                          id: id as string,
+                          values: {
+                            image: updateData.publicUrl,
+                          },
+                        },
+                        {
+                          onSuccess: () => {
+                            makeToast({
+                              title: "Success",
+                              message: "Profile updated successfully",
+                              kind: "success",
+                              duration: 600,
+                            });
+                          },
+                        }
+                      );
+                    }
+
+                    // if (updateData) {
+                    //   mutateUser.mutate({
+                    //     id: id as string,
+                    //     values: {
+                    //       ...values,
+                    //       image: updateData.publicUrl,
+                    //     },
+                    //   });
+                    // }
+                  }}
+                  acceptType={["jpg", "png", "gif"]}
+                  maxNumber={1}
+                >
+                  {({ onImageUpload }) => (
+                    // write your building UI
+                    <div className="relative hidden overflow-hidden rounded-full lg:block">
+                      <div className="relative h-40 w-40 rounded-full">
+                        {data && data?.image && (
+                          <img src={data.image} />
+                          // <Image
+                          //   src={data.image}
+                          //   blurDataURL={data?.image}
+                          //   placeholder="blur"
+                          //   alt={(data && data?.email) || "profile logo"}
+                          //   className="relative h-40 w-40 rounded-full"
+                          //   width={160}
+                          //   height={160}
+                          // />
+                        )}
+
+                        <button
+                          className="absolute inset-0 flex h-full w-full items-center justify-center bg-black bg-opacity-75 text-sm font-medium text-white opacity-0 focus-within:opacity-100 hover:opacity-100"
+                          onClick={onImageUpload}
+                        >
+                          change
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </ImageUploading>
+              )}
+
+              {/* <div className="relative hidden overflow-hidden rounded-full lg:block">
                 {data && (
-                  <Image
-                    src={data?.image ?? "/main1.svg"}
-                    blurDataURL={data?.image ?? "/main1.svg"}
-                    placeholder="blur"
-                    alt={(data && data?.email) || "profile logo"}
-                    className="relative h-40 w-40 rounded-full"
-                    width={160}
-                    height={160}
-                  />
+                  <ImageUploading
+                    value={images}
+                    onChange={onChange}
+                    maxNumber={1}
+                  >
+                    {({ imageList, onImageUpload, onImageRemoveAll }) => (
+                      // write your building UI
+                      <div className="relative h-40 w-40 rounded-full">
+                        <Image
+                          src={data?.image ?? "/main1.svg"}
+                          blurDataURL={data?.image ?? "/main1.svg"}
+                          placeholder="blur"
+                          alt={(data && data?.email) || "profile logo"}
+                          className="relative h-40 w-40 rounded-full"
+                          width={160}
+                          height={160}
+                        />
+                      </div>
+                    )}
+                  </ImageUploading>
                 )}
 
                 <label
@@ -209,7 +354,7 @@ const ProfileBasicInfo = () => {
                     className="absolute inset-0 h-full w-full cursor-pointer rounded-md border-gray-300 opacity-0"
                   />
                 </label>
-              </div>
+              </div> */}
             </div>
           </div>
 

@@ -131,10 +131,26 @@ const EditorPage = () => {
           </button>
         </form>
         {/*    I want to see the values*/}
-        <div className={"text-black"}>{JSON.stringify(data)}</div>
+        <div className={"text-black"}>
+          {/* data will create a new a line for each line we will display it here */}
+          {data?.split("\n\n").map((item, index) => {
+            return (
+              <div key={index}>
+                {item}
+                <br />
+              </div>
+            );
+          })}
+        </div>
       </section>
     </Layout>
   );
 };
 
 export default EditorPage;
+// const responseText = response.data.choices[0].text;
+// const responseTextArray = responseText.split("\n\n");
+// const responseTextArrayFiltered = responseTextArray.filter(
+//   (item) => item !== ""
+// );
+// const responseTextArrayFilteredJoined = responseTextArrayFiltered.join("\n\n");
