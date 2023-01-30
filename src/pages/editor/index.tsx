@@ -2,21 +2,19 @@ import Layout from "../../layout";
 import { useCallback, useState } from "react";
 import OwnEditor from "../../components/editor";
 import Preview from "../../components/preview";
-import { trpc } from "../../utils/trpc";
+import { trpc } from "@/utils/trpc";
 import useZodForm from "../../hooks/use-zod-form";
-import { ChatGPTFormSchema, CreateNote } from "../../schemas/validations";
-import { Controller } from "react-hook-form";
+import type { ChatGPTForm} from "@/schemas/validations";
+import { ChatGPTFormSchema, CreateNote } from "@/schemas/validations";
+import type { SubmitHandler} from "react-hook-form";
+import { Controller  } from "react-hook-form";
 import { useRouter } from "next/router";
 
 const EditorPage = () => {
   const [doc, setDoc] = useState<string>("# Hello, world");
+  const [AIText, setAIText] = useState<string>("")
   const router = useRouter();
-  const utils = trpc.useContext().GPT;
-  const { data, mutateAsync, isLoading } = trpc.GPT.askQuestion.useMutation({
-    onSuccess: async () => {
-      await utils.invalidate();
-    },
-  });
+
   const createNotes = trpc.post.createNote.useMutation({
     onSuccess: async () => {
       await router.push("/");
@@ -25,7 +23,7 @@ const EditorPage = () => {
   const handleDocChange = useCallback((newDoc: string) => {
     setDoc(newDoc);
   }, []);
-  const { handleSubmit, register } = useZodForm({
+  const { handleSubmit, register, formState:{isSubmitting}, reset} = useZodForm({
     schema: ChatGPTFormSchema,
     defaultValues: {
       input: "",
@@ -35,9 +33,35 @@ const EditorPage = () => {
     schema: CreateNote,
   });
 
-  console.log({
-    errors: createNote.formState.errors,
-  });
+  const generate: SubmitHandler<ChatGPTForm> = async (values) => {
+    const response = await fetch("/api/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt: values.input
+      }),
+    })
+    if(!response.ok) {
+      throw new Error(response.statusText);
+
+    }
+    const data = response.body;
+    if(!data)  return;
+    const reader = data.getReader()
+    const decoder = new TextDecoder()
+    let done = false;
+    while (!done) {
+      const {value, done: doneReading} = await reader.read();
+      done = doneReading
+      const chunkValue = decoder.decode(value)
+      setAIText((prev) => prev + chunkValue);
+      reset()
+    }
+  }
+
+
   return (
     <Layout>
       <section className={"mx-auto flex w-full max-w-[1440px] flex-col"}>
@@ -118,39 +142,40 @@ const EditorPage = () => {
 
         <form
           onSubmit={handleSubmit(async (values) => {
-            await mutateAsync(values);
-          })}
+            await generate(values)
+          })
+          }
         >
           <input
             {...register("input")}
             className={"w-full border-2 border-green-200 p-2"}
             type="text"
           />
-          <button type="submit" disabled={isLoading}>
-            {isLoading ? "Loading..." : "Submit"}
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Loading..." : "Submit"}
           </button>
+          {AIText && (
+                <div className={"p-2 border rounded-md"}>
+                  {AIText
+                    .split("\n")
+                    .map((AIText) => {
+                        return (
+                          <>
+                            <p  key={AIText}>{AIText}</p>
+                          </>
+
+                        );
+
+                      }
+                    )}
+                </div>
+
+          )}
         </form>
-        {/*    I want to see the values*/}
-        <div className={"text-black"}>
-          {/* data will create a new a line for each line we will display it here */}
-          {data?.split("\n\n").map((item, index) => {
-            return (
-              <div key={index}>
-                {item}
-                <br />
-              </div>
-            );
-          })}
-        </div>
+
       </section>
     </Layout>
   );
 };
 
 export default EditorPage;
-// const responseText = response.data.choices[0].text;
-// const responseTextArray = responseText.split("\n\n");
-// const responseTextArrayFiltered = responseTextArray.filter(
-//   (item) => item !== ""
-// );
-// const responseTextArrayFilteredJoined = responseTextArrayFiltered.join("\n\n");

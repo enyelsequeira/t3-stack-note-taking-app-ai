@@ -224,58 +224,76 @@ const ProfileBasicInfo = () => {
                   value={images}
                   onChange={async (d: any) => {
                     // console.log("onChange", d[0].file);
-                    // we have to delete the image from the server and upload a new one
-                    // we can't just update the image using supabase
+
+                    // using supabase storage, all I want to do is update the image every time he selects a new one,
+                    // we don't need to delete the old one, we just need to update the image itself and we need to update the image url in the database
                     const { data, error } = await supabase.storage
+
                       .from("profile-images")
-                      .remove([`${router.query.id}-profile`]);
-                    console.log(
-                      { first: data, error },
-                      "========REMOVE ======="
-                    );
-                    if (error) {
-                      makeToast({
-                        title: "Error",
-                        message: error.message,
-                        kind: "error",
-                        duration: 600,
+                      .update(`${router.query.id}-profile`, d[0].file, {
+                        cacheControl: "100",
+                        upsert: true,
                       });
+
+                    // const { data, error } = await supabase.storage
+                    //   .from("profile-images")
+                    //   .update(`${router.query.id}-profile`, d[0].file);
+
+                    if (error) {
                       throw new Error(error.message);
                     }
-                    const { data: uploadData, error: uploadError } =
-                      await supabase.storage
-                        .from("profile-images")
-                        .upload(`${router.query.id}-profile`, d[0]?.file);
-                    console.log(
-                      { secod: uploadData, uploadError },
-                      "======== UPLOAD ======="
-                    );
-                    if (uploadData) {
-                      const { data: updateData } = supabase.storage
-                        .from("profile-images")
-                        .getPublicUrl(`${router.query.id}-profile`);
-                      console.log({ updateData }, "======== UPDATE =======");
-                      console.log({ PPPPPPPPPP: updateData.publicUrl });
-                      mutateUser.mutate(
-                        {
-                          id: id as string,
-                          values: {
-                            image: updateData.publicUrl,
-                          },
-                        },
-                        {
-                          onSuccess: () => {
-                            makeToast({
-                              title: "Success",
-                              message: "Profile updated successfully",
-                              kind: "success",
-                              duration: 600,
-                            });
-                          },
-                        }
-                      );
-                    }
 
+                    // we have to delete the image from the server and upload a new one
+                    // we can't just update the image using supabase
+                    // const { data, error } = await supabase.storage
+                    //   .from("profile-images")
+                    //   .remove([`${router.query.id}-profile`]);
+                    // console.log(
+                    //   { first: data, error },
+                    //   "========REMOVE ======="
+                    // );
+                    // if (error) {
+                    //   makeToast({
+                    //     title: "Error",
+                    //     message: error.message,
+                    //     kind: "error",
+                    //     duration: 600,
+                    //   });
+                    //   throw new Error(error.message);
+                    // }
+                    // const { data: uploadData, error: uploadError } =
+                    //   await supabase.storage
+                    //     .from("profile-images")
+                    //     .upload(`${router.query.id}-profile`, d[0]?.file);
+                    // console.log(
+                    //   { secod: uploadData, uploadError },
+                    //   "======== UPLOAD ======="
+                    // );
+                    // if (uploadData) {
+                    // const { data: updateData } = supabase.storage
+                    //   .from("profile-images")
+                    //   .getPublicUrl(`${router.query.id}-profile`);
+                    //   console.log({ updateData }, "======== UPDATE =======");
+                    //   console.log({ PPPPPPPPPP: updateData.publicUrl });
+                    //   mutateUser.mutate(
+                    //     {
+                    //       id: id as string,
+                    //       values: {
+                    //         image: updateData.publicUrl,
+                    //       },
+                    //     },
+                    //     {
+                    //       onSuccess: () => {
+                    //         makeToast({
+                    //           title: "Success",
+                    //           message: "Profile updated successfully",
+                    //           kind: "success",
+                    //           duration: 600,
+                    //         });
+                    //       },
+                    //     }
+                    //   );
+                    // }
                     // if (updateData) {
                     //   mutateUser.mutate({
                     //     id: id as string,

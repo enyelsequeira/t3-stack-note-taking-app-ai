@@ -5,6 +5,7 @@ export const ChatGPTFormSchema = z.object({
   input: z.string(),
 });
 
+export type ChatGPTForm = z.infer<typeof ChatGPTFormSchema>;
 export const CreateNote = z.object({
   title: z.string(),
   content: z.string(),
