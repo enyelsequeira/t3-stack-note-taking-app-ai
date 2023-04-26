@@ -102,4 +102,20 @@ export const post = router({
 
       return newPost;
     }),
+  // get post/Note by their userId
+  getByUserId: publicProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { userId } = input;
+      const posts = await ctx.prisma.post.findMany({
+        where: {
+          userId,
+        },
+      });
+      return posts;
+    }),
 });

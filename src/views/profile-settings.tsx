@@ -5,6 +5,9 @@ import Box from "../components/Global/Box/Box";
 import ProfileBasicInfo from "../components/Settings/Profile/profile";
 import Layout from "../layout";
 import { subNavigation } from "../utils/constants";
+import PostsCard from "@/components/PostCards";
+import { Text } from "@mantine/core";
+import PostPanel from "@/components/Panels/Posts";
 
 const ProfileSettings = () => {
   return (
@@ -108,11 +111,10 @@ const ProfileSettings = () => {
                       <Tab.Panel className="divide-y divide-gray-200 lg:col-span-9">
                         <ProfileBasicInfo />
                       </Tab.Panel>
-                      <Tab.Panel>2</Tab.Panel>
+                      <PostPanel />
                       <Tab.Panel>3</Tab.Panel>
                       <Tab.Panel>4</Tab.Panel>
                       <Tab.Panel>5</Tab.Panel>
-
                       <Tab.Panel>6</Tab.Panel>
                     </Tab.Panels>
                   </div>

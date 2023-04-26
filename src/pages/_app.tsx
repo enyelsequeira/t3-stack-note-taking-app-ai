@@ -8,6 +8,7 @@ import { trpc } from "../utils/trpc";
 import { MantineProvider } from "@mantine/core";
 import "../styles/globals.css";
 import RouterTransition from "@/components/RouteTransition";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -23,6 +24,8 @@ const MyApp: AppType<{ session: Session | null }> = ({
           limit={5}
           autoClose={3000}
         />
+        <ReactQueryDevtools />
+
         <Component {...pageProps} />
       </MantineProvider>
     </SessionProvider>

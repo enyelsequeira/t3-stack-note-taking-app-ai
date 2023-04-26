@@ -51,6 +51,12 @@ const Features = () => {
           });
         }
       },
+      onSuccess: () => {
+        notifications.show({
+          message: "Post Created",
+          title: "Success",
+        });
+      },
     });
   };
   console.log({ datA: watch() });
@@ -84,7 +90,7 @@ const Features = () => {
             root: "max-w-md w-full xl:pl-16",
             label: "mb-1 text-lg",
           }}
-          icon={<IconHash />}
+          icon={<IconHash size={12} />}
           data={data}
           searchable
           radius={"md"}
