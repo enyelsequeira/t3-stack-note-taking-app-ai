@@ -9,9 +9,15 @@ import Superscript from "@tiptap/extension-superscript";
 import SubScript from "@tiptap/extension-subscript";
 import { lowlight } from "lowlight";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
-import { ActionIcon, Button, ScrollArea } from "@mantine/core";
+import { ActionIcon, ScrollArea } from "@mantine/core";
 import { useRef } from "react";
 import { IconArrowUp } from "@tabler/icons";
+import Typography from "@tiptap/extension-typography";
+import Document from "@tiptap/extension-document";
+import Dropcursor from "@tiptap/extension-dropcursor";
+import Image from "@tiptap/extension-image";
+import Paragraph from "@tiptap/extension-paragraph";
+import Text from "@tiptap/extension-text";
 
 type Props = {
   description: string;
@@ -31,6 +37,12 @@ const Editor = (props: Props) => {
       Superscript,
       SubScript,
       Highlight,
+      Typography,
+      Document,
+      Paragraph,
+      Text,
+      Image,
+      Dropcursor,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
       CodeBlockLowlight.configure({
         lowlight,

@@ -1,9 +1,7 @@
 import Layout from "@/layout";
 
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import Editor from "@/components/editor";
-import { Button, MultiSelect, TextInput } from "@mantine/core";
-import { useSession } from "next-auth/react";
+import { Controller, SubmitHandler } from "react-hook-form";
+import { Button } from "@mantine/core";
 import { IconError404, IconHash } from "@tabler/icons";
 import { useState } from "react";
 import { trpc } from "@/utils/trpc";
@@ -13,6 +11,7 @@ import { CreateNote, NoteCreation } from "@/schemas/validations";
 import { OwnInput } from "@/components/Form/Input";
 import { OwnMultiSelect } from "@/components/Form/MultiSelect";
 import { TRPCClientError } from "@trpc/client";
+import Editor from "@/components/Editor";
 
 // const content =
 //   '<h2 style="text-align: center;">Welcome to Mantine rich text editor</h2><p><code>RichTextEditor</code> component focuses on usability and is designed to be as simple as possible to bring a familiar editing experience to regular users. <code>RichTextEditor</code> is based on <a href="https://tiptap.dev/" rel="noopener noreferrer" target="_blank">Tiptap.dev</a> and supports all of its features:</p><ul><li>General text formatting: <strong>bold</strong>, <em>italic</em>, <u>underline</u>, <s>strike-through</s> </li><li>Headings (h1-h6)</li><li>Sub and super scripts (<sup>&lt;sup /&gt;</sup> and <sub>&lt;sub /&gt;</sub> tags)</li><li>Ordered and bullet lists</li><li>Text align&nbsp;</li><li>And all <a href="https://tiptap.dev/extensions" target="_blank" rel="noopener noreferrer">other extensions</a></li></ul>';
@@ -20,7 +19,9 @@ import { TRPCClientError } from "@trpc/client";
 const Features = () => {
   // const { data } = useSession();
   // console.log({ data });
-  const content = `<h1>Hello World</h1>`;
+  const content = ` <p>This is a basic example of implementing images. Drag to re-order.</p>
+      <img src="https://source.unsplash.com/8xznAGy4HcY/800x400" />
+      <img src="https://source.unsplash.com/K9QHL52rE2k/800x400" />`;
   const { mutate, mutateAsync } = trpc.post.createNote.useMutation();
 
   const { formState, watch, handleSubmit, control } = useZodForm({
@@ -86,6 +87,7 @@ const Features = () => {
           icon={<IconHash />}
           data={data}
           searchable
+          radius={"md"}
           creatable
           getCreateLabel={(query) => `+ Create ${query}`}
           onCreate={(query) => {
