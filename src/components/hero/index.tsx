@@ -2,6 +2,8 @@ import { Icon360, IconArrowRight } from "@tabler/icons";
 import Box from "../Global/Box/Box";
 import { Button } from "../Global/Button/Button";
 import Text from "../Global/Text/Text";
+import { Button as MButton } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 
 const Hero = () => {
   return (
@@ -42,6 +44,15 @@ const Hero = () => {
               >
                 Get started{" "}
               </Button>
+
+              {/* <MButton
+                variant="outline"
+                onClick={() =>
+                  notifications.show({ message: "I will close in 4 seconds" })
+                }
+              >
+                Notifications Provider timeout
+              </MButton> */}
 
               <Button intention={"subHero"} href={"/signin"} EndIcon={Icon360}>
                 Sign In{" "}

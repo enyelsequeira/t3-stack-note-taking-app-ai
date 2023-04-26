@@ -4,15 +4,16 @@ import OwnEditor from "../../components/editor";
 import Preview from "../../components/preview";
 import { trpc } from "@/utils/trpc";
 import useZodForm from "../../hooks/use-zod-form";
-import type { ChatGPTForm} from "@/schemas/validations";
+import type { ChatGPTForm } from "@/schemas/validations";
 import { ChatGPTFormSchema, CreateNote } from "@/schemas/validations";
-import type { SubmitHandler} from "react-hook-form";
-import { Controller  } from "react-hook-form";
+import type { SubmitHandler } from "react-hook-form";
+import { Controller } from "react-hook-form";
 import { useRouter } from "next/router";
 
 const EditorPage = () => {
   const [doc, setDoc] = useState<string>("# Hello, world");
-  const [AIText, setAIText] = useState<string>("")
+  const [updatedDoc, setUpdatedDoc] = useState<string>(doc);
+  const [AIText, setAIText] = useState<string>("");
   const router = useRouter();
 
   const createNotes = trpc.post.createNote.useMutation({
@@ -21,9 +22,14 @@ const EditorPage = () => {
     },
   });
   const handleDocChange = useCallback((newDoc: string) => {
-    setDoc(newDoc);
+    setUpdatedDoc(newDoc); // Update this line
   }, []);
-  const { handleSubmit, register, formState:{isSubmitting}, reset} = useZodForm({
+  const {
+    handleSubmit,
+    register,
+    formState: { isSubmitting },
+    reset,
+  } = useZodForm({
     schema: ChatGPTFormSchema,
     defaultValues: {
       input: "",
@@ -40,27 +46,25 @@ const EditorPage = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        prompt: values.input
+        prompt: values.input,
       }),
-    })
-    if(!response.ok) {
+    });
+    if (!response.ok) {
       throw new Error(response.statusText);
-
     }
     const data = response.body;
-    if(!data)  return;
-    const reader = data.getReader()
-    const decoder = new TextDecoder()
+    if (!data) return;
+    const reader = data.getReader();
+    const decoder = new TextDecoder();
     let done = false;
     while (!done) {
-      const {value, done: doneReading} = await reader.read();
-      done = doneReading
-      const chunkValue = decoder.decode(value)
+      const { value, done: doneReading } = await reader.read();
+      done = doneReading;
+      const chunkValue = decoder.decode(value);
       setAIText((prev) => prev + chunkValue);
-      reset()
+      reset();
     }
-  }
-
+  };
 
   return (
     <Layout>
@@ -103,27 +107,17 @@ const EditorPage = () => {
               />
             </div>
           </div>
-          <Controller
+          {/* <Controller
             render={({ field: { onChange } }) => {
-              return (
-                <OwnEditor
-                  initialDoc={doc}
-                  onChange={(newDoc) => {
-                    console.log({ correctDoc: newDoc.replace(/\n/g, " ") });
-                    // this is correct however when \n  is in the string it will create a new line in the editor
-                    onChange(newDoc);
-
-                    // onChange(newDoc);
-                    handleDocChange(doc);
-                  }}
-                />
-              );
+              return ( */}
+          <OwnEditor initialDoc={doc} onChange={handleDocChange} />
+          {/* );
             }}
             name={"content"}
             control={createNote.control}
-          />
+          /> */}
 
-          <Preview doc={doc} />
+          <Preview doc={updatedDoc} />
           <div className={"col-span-2 mx-auto"}>
             <div className="mx-auto flex h-16 w-64 items-center justify-center">
               <button
@@ -138,13 +132,12 @@ const EditorPage = () => {
           </div>
         </form>
 
-        <div>OPEN AI</div>
+        {/* <div>OPEN AI</div> */}
 
-        <form
+        {/* <form
           onSubmit={handleSubmit(async (values) => {
-            await generate(values)
-          })
-          }
+            await generate(values);
+          })}
         >
           <input
             {...register("input")}
@@ -155,24 +148,17 @@ const EditorPage = () => {
             {isSubmitting ? "Loading..." : "Submit"}
           </button>
           {AIText && (
-                <div className={"p-2 border rounded-md"}>
-                  {AIText
-                    .split("\n")
-                    .map((AIText) => {
-                        return (
-                          <>
-                            <p  key={AIText}>{AIText}</p>
-                          </>
-
-                        );
-
-                      }
-                    )}
-                </div>
-
+            <div className={"rounded-md border p-2"}>
+              {AIText.split("\n").map((AIText) => {
+                return (
+                  <>
+                    <p key={AIText}>{AIText}</p>
+                  </>
+                );
+              })}
+            </div>
           )}
-        </form>
-
+        </form> */}
       </section>
     </Layout>
   );

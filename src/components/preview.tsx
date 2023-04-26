@@ -11,6 +11,7 @@ type Props = {
 };
 
 const Preview = ({ doc }: Props) => {
+  console.log({ doc });
   return (
     <div className="w-full border-2 border-blue-900  bg-green-200/25">
       <ReactMarkdown

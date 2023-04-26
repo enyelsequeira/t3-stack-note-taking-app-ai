@@ -11,9 +11,10 @@ import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]";
 import type { GetServerSideProps } from "next";
 import useZodForm from "@/hooks/use-zod-form";
-import { SignInUser, SignInUserType } from "@/schemas/validations";
+import type { SignInUserType } from "@/schemas/validations";
+import { SignInUser } from "@/schemas/validations";
 import Input from "@/components/Global/Input/Input";
-import { SubmitHandler } from "react-hook-form";
+import type { SubmitHandler } from "react-hook-form";
 import { input } from "@/utils/classess-constant";
 
 const Sign = () => {

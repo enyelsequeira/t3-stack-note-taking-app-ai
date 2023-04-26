@@ -16,39 +16,10 @@ import { useEffect, useState } from "react";
 import type { ImageListType } from "react-images-uploading";
 import ImageUploading from "react-images-uploading";
 import { supabase } from "@/utils/supabase";
-import { makeToast } from "@/components/Global/Toast/Toast";
-import invariant from "tiny-invariant";
 
 const ProfileBasicInfo = () => {
   const router = useRouter();
   const [images, setImages] = useState([]);
-
-  const imageUpload = async (
-    imageList: ImageListType,
-    addUpdateIndex: number[] | undefined
-  ) => {
-    // data for submit
-    console.log({ imageList, addUpdateIndex });
-    console.log({ file: imageList?.[0]?.file });
-    try {
-      invariant(imageList?.[0]?.file, "No file found");
-      console.log({ file: imageList[0].file });
-
-      const { data, error } = await supabase.storage
-        .from("profile-images")
-        .upload(`${router.query.id}-profile`, imageList[0].file);
-
-      console.log({ data, error });
-    } catch (error) {
-      makeToast({
-        kind: "error",
-        title: "Error",
-        message: "Error uploading image",
-      });
-    }
-
-    setImages(imageList as never[]);
-  };
 
   const { id } = router.query;
   const utils = trpc.useContext().user;
@@ -70,24 +41,13 @@ const ProfileBasicInfo = () => {
     },
   });
 
-  // values should be all the data
-  const values = {
-    firstName: (data?.firstName as string) || "",
-    lastName: (data?.lastName as string) || "",
-    profileUrl: (data?.profileUrl as string) || "",
-    username: (data?.username as string) || "",
-    bio: (data?.bio as string) || "",
-    location: (data?.location as string) || "US",
-    portfolio: (data?.portfolio as string) || "",
-  };
-
   const [selectedCountry, setSelectedCountry] = useState(
     getName((data?.location as string) || "US")
   );
 
   const methods = useZodForm({
     schema: UpdateUserSchema,
-    values,
+    mode: "onSubmit",
   });
 
   const handleSubmitForm: SubmitHandler<UpdateUserSchemaType> = async (
@@ -103,8 +63,6 @@ const ProfileBasicInfo = () => {
       setSelectedCountry(getName((data?.location as string) ?? "US"));
     }
   }, [isLoading, data?.location]);
-
-  console.log({ url: data?.image });
 
   return (
     <FormProvider {...methods}>
@@ -132,8 +90,8 @@ const ProfileBasicInfo = () => {
                 >
                   Username
                 </label>
-                <div className="mt-1 flex rounded-md shadow-sm">
-                  <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">
+                <div className="group mt-1 flex rounded-md shadow-sm ">
+                  <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 focus:border-sky-500 sm:text-sm">
                     MemoMinder.com/
                   </span>
                   <input
@@ -141,12 +99,17 @@ const ProfileBasicInfo = () => {
                     id="username"
                     autoComplete="username"
                     placeholder={data?.username || "Username"}
-                    className={`border-l-0border block w-full min-w-0 flex-grow rounded-none rounded-r-md border border-gray-300  focus:border-sky-500  focus:outline-none focus:ring-sky-500 sm:text-sm ${
+                    className={`block  w-full min-w-0 flex-grow rounded-none rounded-r-md border border-l-0 border-gray-300 py-2  focus:border-sky-500  focus:outline-none focus:ring-sky-500 sm:text-sm ${
                       methods?.formState?.errors?.username && "border-red-500"
                     }`}
                     {...methods.register("username")}
                   />
                 </div>
+                {methods?.formState?.errors?.username && (
+                  <p className="text-sm text-red-600">
+                    {methods.formState.errors.username.message}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -168,6 +131,9 @@ const ProfileBasicInfo = () => {
                     {...methods.register("bio")}
                   />
                 </div>
+                <Text className={"text-sm text-red-600"}>
+                  {methods?.formState?.errors?.bio?.message || " "}
+                </Text>
                 <Text as="p" className="mt-2 text-sm text-gray-500">
                   Brief description for your profile. URLs are hyperlinked.
                 </Text>
@@ -242,67 +208,6 @@ const ProfileBasicInfo = () => {
                     if (error) {
                       throw new Error(error.message);
                     }
-
-                    // we have to delete the image from the server and upload a new one
-                    // we can't just update the image using supabase
-                    // const { data, error } = await supabase.storage
-                    //   .from("profile-images")
-                    //   .remove([`${router.query.id}-profile`]);
-                    // console.log(
-                    //   { first: data, error },
-                    //   "========REMOVE ======="
-                    // );
-                    // if (error) {
-                    //   makeToast({
-                    //     title: "Error",
-                    //     message: error.message,
-                    //     kind: "error",
-                    //     duration: 600,
-                    //   });
-                    //   throw new Error(error.message);
-                    // }
-                    // const { data: uploadData, error: uploadError } =
-                    //   await supabase.storage
-                    //     .from("profile-images")
-                    //     .upload(`${router.query.id}-profile`, d[0]?.file);
-                    // console.log(
-                    //   { secod: uploadData, uploadError },
-                    //   "======== UPLOAD ======="
-                    // );
-                    // if (uploadData) {
-                    // const { data: updateData } = supabase.storage
-                    //   .from("profile-images")
-                    //   .getPublicUrl(`${router.query.id}-profile`);
-                    //   console.log({ updateData }, "======== UPDATE =======");
-                    //   console.log({ PPPPPPPPPP: updateData.publicUrl });
-                    //   mutateUser.mutate(
-                    //     {
-                    //       id: id as string,
-                    //       values: {
-                    //         image: updateData.publicUrl,
-                    //       },
-                    //     },
-                    //     {
-                    //       onSuccess: () => {
-                    //         makeToast({
-                    //           title: "Success",
-                    //           message: "Profile updated successfully",
-                    //           kind: "success",
-                    //           duration: 600,
-                    //         });
-                    //       },
-                    //     }
-                    //   );
-                    // }
-                    // if (updateData) {
-                    //   mutateUser.mutate({
-                    //     id: id as string,
-                    //     values: {
-                    //       ...values,
-                    //       image: updateData.publicUrl,
-                    //     },
-                    //   });
-                    // }
                   }}
                   acceptType={["jpg", "png", "gif"]}
                   maxNumber={1}
@@ -335,44 +240,6 @@ const ProfileBasicInfo = () => {
                   )}
                 </ImageUploading>
               )}
-
-              {/* <div className="relative hidden overflow-hidden rounded-full lg:block">
-                {data && (
-                  <ImageUploading
-                    value={images}
-                    onChange={onChange}
-                    maxNumber={1}
-                  >
-                    {({ imageList, onImageUpload, onImageRemoveAll }) => (
-                      // write your building UI
-                      <div className="relative h-40 w-40 rounded-full">
-                        <Image
-                          src={data?.image ?? "/main1.svg"}
-                          blurDataURL={data?.image ?? "/main1.svg"}
-                          placeholder="blur"
-                          alt={(data && data?.email) || "profile logo"}
-                          className="relative h-40 w-40 rounded-full"
-                          width={160}
-                          height={160}
-                        />
-                      </div>
-                    )}
-                  </ImageUploading>
-                )}
-
-                <label
-                  htmlFor="desktop-user-photo"
-                  className="absolute inset-0 flex h-full w-full items-center justify-center bg-black bg-opacity-75 text-sm font-medium text-white opacity-0 focus-within:opacity-100 hover:opacity-100"
-                >
-                  <span>Change</span>
-                  <input
-                    type="file"
-                    id="desktop-user-photo"
-                    name="user-photo"
-                    className="absolute inset-0 h-full w-full cursor-pointer rounded-md border-gray-300 opacity-0"
-                  />
-                </label>
-              </div> */}
             </div>
           </div>
 
@@ -381,6 +248,7 @@ const ProfileBasicInfo = () => {
               wrapperClassName="col-span-12 sm:col-span-6"
               labelClassName="block text-sm font-medium text-gray-700"
               inputClassName="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-sky-500 sm:text-sm"
+              errorClassName="text-red-600 text-sm"
               name="firstName"
               label="First name"
               type="text"
@@ -393,6 +261,7 @@ const ProfileBasicInfo = () => {
               wrapperClassName="col-span-12 sm:col-span-6"
               labelClassName="block text-sm font-medium text-gray-700"
               inputClassName="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-sky-500 sm:text-sm"
+              errorClassName="text-red-600 text-sm"
               name="lastName"
               label="Last name"
               type="text"
@@ -403,6 +272,7 @@ const ProfileBasicInfo = () => {
             />
             <Input
               wrapperClassName="col-span-12"
+              errorClassName="text-red-600 text-sm"
               labelClassName="block text-sm font-medium text-gray-700"
               inputClassName="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-sky-500 sm:text-sm"
               name="portfolio"
@@ -414,6 +284,7 @@ const ProfileBasicInfo = () => {
             />
             <Input
               wrapperClassName="col-span-12 sm:col-span-6"
+              errorClassName="text-red-600 text-sm"
               name="profileUrl"
               label="Company"
               type="text"

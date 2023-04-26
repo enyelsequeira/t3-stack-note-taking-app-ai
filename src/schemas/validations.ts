@@ -7,11 +7,22 @@ export const ChatGPTFormSchema = z.object({
 
 export type ChatGPTForm = z.infer<typeof ChatGPTFormSchema>;
 export const CreateNote = z.object({
-  title: z.string(),
-  content: z.string(),
-  // keywords: z.array(z.string()),
-  keywords: z.string(),
+  title: z
+    .string({
+      description: "Title of the note",
+      required_error: "Title is required",
+    })
+    .min(2, { message: "Title is too short" })
+    .max(100, { message: "Title is too long" }),
+  text: z.string(),
+  // keywords should be a string array of at least 3 items
+  keywords: z.array(z.string()).min(3, {
+    message: "Please add at least 3 tags",
+  }),
+
+  // keywords: z.string(),
 });
+export type NoteCreation = z.infer<typeof CreateNote>;
 
 // so we will create a schema for the user, now a few things to keep in mind, none of these are required in zod, user
 // will be able to update one field or all of them at once, so we will make all of them optional

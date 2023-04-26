@@ -9,7 +9,7 @@ import { trpc } from "../../utils/trpc";
 
 export const navigation = [
   { name: "Product", href: "/editor" },
-  { name: "Features", href: "#" },
+  { name: "Features", href: "/features" },
   { name: "Marketplace", href: "#" },
   { name: "Company", href: "#" },
 ];

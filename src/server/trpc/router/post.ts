@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../trpc";
 import { CreateNote } from "../../../schemas/validations";
+import { TRPCError } from "@trpc/server";
 
 export const post = router({
   // get all posts
@@ -77,18 +78,20 @@ export const post = router({
   createNote: publicProcedure
     .input(CreateNote)
     .mutation(async ({ ctx, input }) => {
-      const { title, content, keywords } = input;
+      const { title, text, keywords } = input;
       if (!ctx.session?.user) {
-        throw new Error("You must be logged in to create a post");
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You must be logged in to create a post",
+          cause: new Error("You must be logged in to create a post"),
+        });
       }
-      if (ctx.session.user.email !== "enyelsequeira@hotmail.com") {
-        throw new Error("You must be an admin to in to create a post");
-      }
-      const post = await ctx.prisma.post.create({
+
+      const newPost = await ctx.prisma.post.create({
         data: {
-          title: title,
+          text,
+          title,
           keywords,
-          text: content,
           user: {
             connect: {
               id: ctx.session.user.id,
@@ -96,6 +99,7 @@ export const post = router({
           },
         },
       });
-      return post;
+
+      return newPost;
     }),
 });
