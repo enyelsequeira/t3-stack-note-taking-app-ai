@@ -24,6 +24,13 @@ export const CreateNote = z.object({
 });
 export type NoteCreation = z.infer<typeof CreateNote>;
 
+// lets use the createNote schema to extend one more values userId
+export const UpdateNote = CreateNote.extend({
+  userId: z.string(),
+  postId: z.string(),
+});
+export type UpdateNoteType = z.infer<typeof UpdateNote>;
+
 // so we will create a schema for the user, now a few things to keep in mind, none of these are required in zod, user
 // will be able to update one field or all of them at once, so we will make all of them optional
 

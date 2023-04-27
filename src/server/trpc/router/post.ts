@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { publicProcedure, router } from "../trpc";
-import { CreateNote } from "../../../schemas/validations";
+import { protectedProcedure, publicProcedure, router } from "../trpc";
+import { CreateNote, UpdateNote } from "../../../schemas/validations";
 import { TRPCError } from "@trpc/server";
 
 export const post = router({
@@ -117,5 +117,61 @@ export const post = router({
         },
       });
       return posts;
+    }),
+
+  // get by post id
+  getByPostId: publicProcedure
+    .input(
+      z.object({
+        postId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { postId } = input;
+      const post = await ctx.prisma.post.findUniqueOrThrow({
+        where: {
+          id: postId,
+        },
+      });
+      return post;
+    }),
+  // update a post by id, it must belong to the user
+  updatePost: protectedProcedure
+    .input(UpdateNote)
+    .mutation(async ({ ctx, input }) => {
+      const { postId, title, text, keywords, userId } = input;
+      // we have to do a few things, here check the if the post belongs to the userId, if it does we can update it, however if it doesn't we throw an error saying that the post doesn't belong to the user
+      const post = await ctx.prisma.post.findUnique({
+        where: {
+          id: postId,
+        },
+      });
+      if (!post) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Opps, seems like this post doesn't exist",
+          cause: new Error("Post not found"),
+        });
+      }
+      if (post.userId !== userId) {
+        console.log({ THEYDONOTMATCH: post?.userId, userId });
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Opps, seems like you are not the owner of this post",
+          cause: new Error("Wrong user"),
+        });
+      }
+
+      const updatedPost = await ctx.prisma.post.update({
+        where: {
+          id: postId,
+        },
+        data: {
+          title,
+          text,
+          keywords,
+        },
+      });
+      return updatedPost;
     }),
 });

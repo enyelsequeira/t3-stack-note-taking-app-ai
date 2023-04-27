@@ -22,14 +22,16 @@ import Text from "@tiptap/extension-text";
 type Props = {
   description: string;
   onChange: (...event: any[]) => void;
+  edit?: boolean;
 };
-const Editor = (props: Props) => {
+const Editor = ({ description, onChange, edit }: Props) => {
   const viewport = useRef<HTMLDivElement>(null);
 
   const scrollToTop = () =>
     viewport && viewport?.current?.scrollTo({ top: 0, behavior: "smooth" });
 
   const editor = useEditor({
+    editable: edit,
     extensions: [
       StarterKit,
       Underline,
@@ -49,10 +51,10 @@ const Editor = (props: Props) => {
       }),
     ],
     onUpdate: ({ editor }) => {
-      props.onChange(editor.getHTML());
+      onChange(editor.getHTML());
     },
 
-    content: props.description,
+    content: description,
   });
   return (
     <RichTextEditor

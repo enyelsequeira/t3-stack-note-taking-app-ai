@@ -61,7 +61,7 @@ function Value({
     <div {...others}>
       <Box
         sx={(theme) => {
-          console.log({ datasss: theme.spacing.xs, theme });
+          // console.log({ datasss: theme.spacing.xs, theme });
           return {
             display: "flex",
             cursor: "default",

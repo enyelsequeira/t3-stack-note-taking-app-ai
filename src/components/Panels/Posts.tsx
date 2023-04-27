@@ -11,6 +11,7 @@ const PostPanel = () => {
     { userId: data?.user?.id as string },
     { enabled: !!data?.user?.id }
   );
+
   console.log({ userPost });
 
   return (
@@ -25,11 +26,22 @@ const PostPanel = () => {
       >
         All your posts in one place
       </Text>
-      {[1, 2, 3, 4, 5, 6].map((item, indx) => (
-        // each post should have an image if no image we default to one given by us
-        // could add a short description, and we could also create the slug for the user or we can use the id of the post
-        <PostsCard key={indx} />
-      ))}
+      {userPost?.length ? (
+        userPost.map((item, index) => {
+          return <PostsCard key={index} {...item} />;
+        })
+      ) : (
+        <Text
+          className="col-span-2 my-3 text-2xl"
+          variant="gradient"
+          gradient={{ from: "indigo", to: "cyan", deg: 45 }}
+          // sx={{ fontFamily: "Greycliff CF, sans-serif" }}
+          ta="center"
+          fw={700}
+        >
+          You have no posts yet
+        </Text>
+      )}
     </Tab.Panel>
   );
 };

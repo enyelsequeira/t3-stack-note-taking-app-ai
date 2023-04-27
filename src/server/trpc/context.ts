@@ -14,9 +14,9 @@ type CreateContextOptions = {
  * - trpc's `createSSGHelpers` where we don't have req/res
  * @see https://create.t3.gg/en/usage/trpc#-servertrpccontextts
  **/
-export const createContextInner = async (opts: CreateContextOptions) => {
+export const createContextInner = async (opts?: CreateContextOptions) => {
   return {
-    session: opts.session,
+    session: opts?.session,
     prisma,
   };
 };
@@ -25,7 +25,8 @@ export const createContextInner = async (opts: CreateContextOptions) => {
  * This is the actual context you'll use in your router
  * @link https://trpc.io/docs/context
  **/
-export const createContext = async (opts: CreateNextContextOptions) => {
+export const createContext = async (opts?: CreateNextContextOptions) => {
+  if (!opts) throw new Error("opts is undefined");
   const { req, res } = opts;
 
   // Get the session from the server using the unstable_getServerSession wrapper function
