@@ -16,12 +16,27 @@ export const CreateNote = z.object({
     .max(100, { message: "Title is too long" }),
   text: z.string(),
   // keywords should be a string array of at least 3 items
-  keywords: z.array(z.string()).min(3, {
-    message: "Please add at least 3 tags",
-  }),
-
-  // keywords: z.string(),
+  keywords: z
+    .array(z.string(), {
+      description: "Keywords are required",
+      required_error: "Keywords are required",
+    })
+    .min(3, {
+      message: "Please add at least 3 tags",
+    }),
+  description: z
+    .string({
+      description: "Description is required",
+      required_error: "Description is required",
+    })
+    .max(300, {
+      message: "Description is too long",
+    })
+    .min(10, {
+      message: "Description is too short",
+    }),
 });
+
 export type NoteCreation = z.infer<typeof CreateNote>;
 
 // lets use the createNote schema to extend one more values userId

@@ -35,7 +35,6 @@ const PostPanel = () => {
           className="col-span-2 my-3 text-2xl"
           variant="gradient"
           gradient={{ from: "indigo", to: "cyan", deg: 45 }}
-          // sx={{ fontFamily: "Greycliff CF, sans-serif" }}
           ta="center"
           fw={700}
         >

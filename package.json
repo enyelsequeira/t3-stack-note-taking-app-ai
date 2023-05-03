@@ -119,6 +119,7 @@
     "autoprefixer": "^10.4.7",
     "eslint": "^8.26.0",
     "eslint-config-next": "13.1.1",
+    "eslint-config-prettier": "^8.8.0",
     "husky": "^8.0.3",
     "postcss": "^8.4.14",
     "prettier": "^2.8.1",

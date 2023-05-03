@@ -1,20 +1,21 @@
-// import { useRouter } from "next/router";
 import { trpc } from "../../../utils/trpc";
 import Layout from "@/layout";
 import Box from "@/components/Global/Box/Box";
 import { useRouter } from "next/router";
-import { Button, Skeleton, Text } from "@mantine/core";
+import { Button, Text } from "@mantine/core";
 import { OwnInput } from "@/components/Form/Input";
 import useZodForm from "@/hooks/use-zod-form";
 import { CreateNote } from "@/schemas/validations";
 import { OwnMultiSelect } from "@/components/Form/MultiSelect";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Editor from "@/components/Editor";
 import { Controller } from "react-hook-form";
 import { TRPCClientError } from "@trpc/client";
 import { notifications } from "@mantine/notifications";
 import { IconError404 } from "@tabler/icons";
 import { useSession } from "next-auth/react";
+import clsx from "clsx";
+import { OwnTextArea } from "@/components/Form/TextArea";
 
 const Post = () => {
   const router = useRouter();
@@ -22,10 +23,9 @@ const Post = () => {
   const [keywords, setKeywords] = useState<{ value: string; label: string }[]>(
     []
   );
-  const ref = useRef();
-  const { data, isLoading, error } = trpc.post.getById.useQuery(
+  const { data, isLoading } = trpc.post.getByPostId.useQuery(
     {
-      id: router.query.post as string,
+      postId: router.query.post as string,
     },
     {
       enabled: !!router.query.post,
@@ -38,6 +38,7 @@ const Post = () => {
       title: data?.title as string,
       keywords: data?.keywords as string[],
       text: data?.text as string,
+      description: data?.description as string,
     },
   });
   console.log({ router });
@@ -55,6 +56,8 @@ const Post = () => {
     }
   }, [isLoading, data]);
 
+  console.log({ wathcing: watch("description") });
+
   const handleDoneClick = () => {
     if (router.asPath) {
       const newPath = (router.asPath ?? "").split("?")[0];
@@ -63,21 +66,19 @@ const Post = () => {
       }
     }
   };
-  if (isLoading) {
-    return <Skeleton className="mt-7" visible={isLoading}></Skeleton>;
-  }
+
   return (
     <Layout>
       <Box as="section" className="relative px-6 lg:px-8">
-        <Text
-          variant="gradient"
-          gradient={{ from: "red", to: "blue", deg: 45 }}
-          fw={700}
-          className="pt-10 text-2xl"
-        >
-          {router.query?.edit ? "Edit Mode" : "Reading  Mode"}
-        </Text>
         <Box container className="flex flex-col gap-y-6">
+          <Text
+            variant="gradient"
+            gradient={{ from: "red", to: "blue", deg: 45 }}
+            fw={700}
+            className="pt-10 text-2xl"
+          >
+            {router.query?.edit ? "Edit Mode" : "Reading  Mode"}
+          </Text>
           <OwnInput
             control={control}
             name="title"
@@ -86,12 +87,19 @@ const Post = () => {
             label="Title"
             classNames={{
               label: "mb-2 text-xl",
+              input: clsx({
+                "placeholder:text-black": !router.query?.edit,
+              }),
             }}
           />
           <OwnMultiSelect
             classNames={{
               label: "mb-2 text-lg",
+              searchInput: clsx({
+                "placeholder:text-black": !router.query?.edit,
+              }),
             }}
+            readOnly={!router.query?.edit}
             control={control}
             name="keywords"
             data={keywords}
@@ -107,10 +115,23 @@ const Post = () => {
               return item;
             }}
           />
+          <OwnTextArea
+            readOnly={!router.query?.edit}
+            name="description"
+            control={control}
+            placeholder={data?.description}
+            label="Description"
+            classNames={{
+              label: "mb-2 text-lg",
+              input: clsx({
+                "placeholder:text-black": !router.query?.edit,
+              }),
+            }}
+          />
           <Controller
             render={({ field }) => (
               <Editor
-                edit={false}
+                edit={!!router.query?.edit}
                 description={data?.text as string}
                 onChange={field.onChange}
               />
@@ -129,6 +150,7 @@ const Post = () => {
                   title: watch("title"),
                   userId: userData?.user?.id as string,
                   postId: data?.id as string,
+                  description: watch("description"),
                 },
                 {
                   onError: (error) => {
@@ -165,6 +187,3 @@ const Post = () => {
 };
 
 export default Post;
-// http://localhost:3000/posts/post/clgzfes8x000atlg9iu0xz8ta?edit=true
-
-// userId: "clgzfdz0r0006tlg9u1043wus";

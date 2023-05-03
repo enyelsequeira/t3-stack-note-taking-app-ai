@@ -70,6 +70,7 @@ model Post {
   title     String
   keywords  String[]
   text      String
+  description String
   userId    String
   Comment   Comment[]
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)

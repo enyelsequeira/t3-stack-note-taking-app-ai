@@ -1,20 +1,20 @@
 import Layout from "@/layout";
 
-import { Controller, SubmitHandler } from "react-hook-form";
+import type { SubmitHandler } from "react-hook-form";
+import { Controller } from "react-hook-form";
 import { Button } from "@mantine/core";
 import { IconError404, IconHash } from "@tabler/icons";
 import { useState } from "react";
 import { trpc } from "@/utils/trpc";
 import { notifications } from "@mantine/notifications";
 import useZodForm from "@/hooks/use-zod-form";
-import { CreateNote, NoteCreation } from "@/schemas/validations";
+import type { NoteCreation } from "@/schemas/validations";
+import { CreateNote } from "@/schemas/validations";
 import { OwnInput } from "@/components/Form/Input";
 import { OwnMultiSelect } from "@/components/Form/MultiSelect";
 import { TRPCClientError } from "@trpc/client";
 import Editor from "@/components/Editor";
-
-// const content =
-//   '<h2 style="text-align: center;">Welcome to Mantine rich text editor</h2><p><code>RichTextEditor</code> component focuses on usability and is designed to be as simple as possible to bring a familiar editing experience to regular users. <code>RichTextEditor</code> is based on <a href="https://tiptap.dev/" rel="noopener noreferrer" target="_blank">Tiptap.dev</a> and supports all of its features:</p><ul><li>General text formatting: <strong>bold</strong>, <em>italic</em>, <u>underline</u>, <s>strike-through</s> </li><li>Headings (h1-h6)</li><li>Sub and super scripts (<sup>&lt;sup /&gt;</sup> and <sub>&lt;sub /&gt;</sub> tags)</li><li>Ordered and bullet lists</li><li>Text align&nbsp;</li><li>And all <a href="https://tiptap.dev/extensions" target="_blank" rel="noopener noreferrer">other extensions</a></li></ul>';
+import { OwnTextArea } from "@/components/Form/TextArea";
 
 const Features = () => {
   // const { data } = useSession();
@@ -22,7 +22,7 @@ const Features = () => {
   const content = ` <p>This is a basic example of implementing images. Drag to re-order.</p>
       <img src="https://source.unsplash.com/8xznAGy4HcY/800x400" />
       <img src="https://source.unsplash.com/K9QHL52rE2k/800x400" />`;
-  const { mutate, mutateAsync } = trpc.post.createNote.useMutation();
+  const { mutate } = trpc.post.createNote.useMutation();
 
   const { formState, watch, handleSubmit, control } = useZodForm({
     schema: CreateNote,
@@ -108,6 +108,15 @@ const Features = () => {
             duration: 150,
             transition: "pop-top-left",
             timingFunction: "ease",
+          }}
+        />
+        <OwnTextArea
+          name="description"
+          label="Description"
+          control={control}
+          classNames={{
+            root: "max-w-md w-full xl:pl-16",
+            label: "mb-1 text-lg",
           }}
         />
         <Controller

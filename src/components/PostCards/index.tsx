@@ -9,7 +9,7 @@ import {
   createStyles,
   rem,
 } from "@mantine/core";
-import { Post } from "@prisma/client";
+import type { Post } from "@prisma/client";
 import { IconBookmark, IconHash, IconHeart, IconShare } from "@tabler/icons";
 import Link from "next/link";
 
@@ -42,7 +42,7 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-function PostsCard({ id, title, keywords }: Post) {
+function PostsCard({ id, title, keywords, text, description }: Post) {
   const { classes, theme } = useStyles();
   const features = keywords.map((keyword, i) => (
     <Badge
@@ -81,9 +81,8 @@ function PostsCard({ id, title, keywords }: Post) {
             Edit
           </Badge>
         </Group>
-        <Text fz="sm" mt="xs">
-          With Fjord Tours you can explore more of the magical fjord landscapes
-          with tours and activities on and around the fjords of Norway
+        <Text fz="sm" mt="xs" lineClamp={4}>
+          {description}
         </Text>
       </Card.Section>
 

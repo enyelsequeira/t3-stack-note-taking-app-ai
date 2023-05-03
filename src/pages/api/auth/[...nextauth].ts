@@ -41,12 +41,14 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async session({ session, user }) {
+      console.log({ session, user });
       if (session.user) {
         session.user.id = user.id;
         session.user.email = user.email;
       }
       return session;
     },
+    //! this will break the first time around JUST FYI
     async signIn({ user }) {
       // lets check is the user.email is env.ADMIN_EMAIL and if so, we will update the user to be an admin
       if (user.email === env.USER_ADMIN) {
@@ -120,29 +122,6 @@ export const authOptions: NextAuthOptions = {
       },
       from: process.env.EMAIL_FROM,
     }),
-
-    // we need a credentials provider to be able to login with email or username and password
-    // CredentialsProvider({
-    //   name: "credentials",
-    //   credentials: {
-    //     username: { label: "Username", type: "text", placeholder: "jsmith" },
-    //     email: { label: "Email", type: "email", placeholder: "email" },
-    //     password: { label: "Password", type: "password" },
-    //   },
-
-    //   async authorize(credentials, req) {
-    //     invariant(credentials, "credentials are required");
-    //     const user = await findUser(credentials?.email, credentials?.username);
-    //     invariant(user, "user not found");
-    //     invariant(user?.password, "password not found");
-    //     const isPasswordValid = await bcrypt.compare(
-    //       credentials?.password,
-    //       user?.password
-    //     );
-
-    //     return isPasswordValid ? user : null;
-    //   },
-    // }),
   ],
 };
 
