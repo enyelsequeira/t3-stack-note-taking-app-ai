@@ -1,6 +1,7 @@
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import GitHubProvider from "next-auth/providers/github";
+import { faker } from "@faker-js/faker";
 
 // Prisma adapter for NextAuth, optional and can be removed
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
@@ -41,20 +42,57 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async session({ session, user }) {
-      console.log({ session, user });
       if (session.user) {
         session.user.id = user.id;
         session.user.email = user.email;
       }
       return session;
     },
+
     //! this will break the first time around JUST FYI
     async signIn({ user }) {
-      // lets check is the user.email is env.ADMIN_EMAIL and if so, we will update the user to be an admin
-      if (user.email === env.USER_ADMIN) {
-        await updateIsAdmin(user?.email as string);
+      try {
+        if (user.email === env.USER_ADMIN) {
+          await updateIsAdmin(user?.email as string);
+        }
+
+        const existingUser = await prisma.user.findUnique({
+          where: { email: user.email as string },
+        });
+
+        if (!existingUser) {
+          const generateUniqueUsername = () =>
+            faker.helpers.unique(faker.internet.userName, [], {
+              maxTime: 1000,
+              maxRetries: 10,
+            });
+
+          let randomUsername = generateUniqueUsername();
+
+          while (
+            await prisma.user.findUnique({
+              where: { username: randomUsername },
+            })
+          ) {
+            randomUsername = generateUniqueUsername();
+          }
+
+          await prisma.user.create({
+            data: {
+              ...user,
+              id: undefined,
+              username: randomUsername,
+            },
+          });
+        }
+
+        return true;
+      } catch (error) {
+        console.error("Error in signIn callback:", error);
+        // Handle the error according to your application's requirements
+        // For example, you can throw a specific error or return false
+        return false;
       }
-      return true;
     },
   },
 

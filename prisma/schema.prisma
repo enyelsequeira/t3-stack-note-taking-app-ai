@@ -61,19 +61,23 @@ model User {
   Comment       Comment[]
   Post          Post[]
   Session       Session[]
+  likes         Post[]    @relation("UserFavorites")
+  bookmarked    Post[]    @relation("UserBookmarks")
 }
 
 model Post {
-  id        String    @id @default(cuid())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  title     String
-  keywords  String[]
-  text      String
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  title       String
+  keywords    String[]
+  text        String
   description String
-  userId    String
-  Comment   Comment[]
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  Comment     Comment[]
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes       User[]    @relation("UserFavorites")
+  bookmarked  User[]    @relation("UserBookmarks")
 }
 
 model Comment {

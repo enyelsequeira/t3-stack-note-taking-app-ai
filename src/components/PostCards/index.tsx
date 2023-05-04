@@ -1,3 +1,4 @@
+import { trpc } from "@/utils/trpc";
 import {
   Card,
   Image,
@@ -9,8 +10,10 @@ import {
   createStyles,
   rem,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import type { Post } from "@prisma/client";
 import { IconBookmark, IconHash, IconHeart, IconShare } from "@tabler/icons";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 const useStyles = createStyles((theme) => ({
@@ -44,6 +47,8 @@ const useStyles = createStyles((theme) => ({
 
 function PostsCard({ id, title, keywords, text, description }: Post) {
   const { classes, theme } = useStyles();
+  const { data } = useSession();
+  const { mutate } = trpc.post.likePost.useMutation();
   const features = keywords.map((keyword, i) => (
     <Badge
       color={theme.colorScheme === "dark" ? "dark" : "gray"}
@@ -101,7 +106,32 @@ function PostsCard({ id, title, keywords, text, description }: Post) {
             THEY LIKED 888
           </Text>
           <Group spacing={0}>
-            <ActionIcon>
+            <ActionIcon
+              onClick={() => {
+                mutate(
+                  {
+                    postId: id,
+                    userId: data?.user?.id as string,
+                  },
+                  {
+                    onSuccess() {
+                      notifications.show({
+                        title: "Post liked",
+                        message: "Post liked successfully",
+                      });
+                    },
+                    onError(error) {
+                      console.log({ error });
+                      notifications.show({
+                        title: "Error",
+                        message: "Error while liking post",
+                        color: "red",
+                      });
+                    },
+                  }
+                );
+              }}
+            >
               <IconHeart
                 size="1.2rem"
                 color={theme.colors.red[6]}

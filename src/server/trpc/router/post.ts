@@ -6,7 +6,25 @@ import { TRPCError } from "@trpc/server";
 export const post = router({
   // get all posts
   getAll: publicProcedure.query(async ({ ctx }) => {
-    const posts = await ctx.prisma.post.findMany();
+    const posts = await ctx.prisma.post.findMany({
+      select: {
+        id: true,
+        title: true,
+        keywords: true,
+        description: true,
+        text: true,
+        createdAt: true,
+        updatedAt: true,
+        likes: true,
+        userId: true,
+
+        user: {
+          select: {
+            username: true,
+          },
+        },
+      },
+    });
     return posts;
   }),
 
@@ -109,6 +127,52 @@ export const post = router({
           text,
           keywords,
           description,
+        },
+      });
+      return updatedPost;
+    }),
+
+  // like a post based on the id
+  likePost: protectedProcedure
+    .input(
+      z.object({
+        postId: z.string(),
+        userId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { postId, userId } = input;
+      // we have to do a few things, here check the if the post belongs to the userId, if it does we can update it, however if it doesn't we throw an error saying that the post doesn't belong to the user
+      const post = await ctx.prisma.post.findUnique({
+        where: {
+          id: postId,
+        },
+      });
+      if (!post) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Opps, seems like this post doesn't exist",
+          cause: new Error("Post not found"),
+        });
+      }
+      if (post.userId === userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Opps, seems like you are the owner of this post",
+          cause: new Error("Wrong user"),
+        });
+      }
+
+      const updatedPost = await ctx.prisma.post.update({
+        where: {
+          id: postId,
+        },
+        data: {
+          likes: {
+            connect: {
+              id: userId,
+            },
+          },
         },
       });
       return updatedPost;
