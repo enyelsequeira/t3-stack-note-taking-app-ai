@@ -8,6 +8,7 @@ import { subNavigation } from "../utils/constants";
 import PostsCard from "@/components/PostCards";
 import { Text } from "@mantine/core";
 import PostPanel from "@/components/Panels/Posts";
+import LikedPanel from "@/components/Panels/LikePosts";
 
 const ProfileSettings = () => {
   return (
@@ -112,7 +113,8 @@ const ProfileSettings = () => {
                         <ProfileBasicInfo />
                       </Tab.Panel>
                       <PostPanel />
-                      <Tab.Panel>3</Tab.Panel>
+                      <LikedPanel />
+
                       <Tab.Panel>4</Tab.Panel>
                       <Tab.Panel>5</Tab.Panel>
                       <Tab.Panel>6</Tab.Panel>

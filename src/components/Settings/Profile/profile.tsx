@@ -35,7 +35,7 @@ const ProfileBasicInfo = () => {
     }
   );
 
-  console.log({ data });
+  console.log({ profile: data });
 
   const mutateUser = trpc.user.updateById.useMutation({
     onSuccess: () => {

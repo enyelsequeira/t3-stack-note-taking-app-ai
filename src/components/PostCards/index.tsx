@@ -45,7 +45,15 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-function PostsCard({ id, title, keywords, text, description }: Post) {
+type Props = {
+  by?: string;
+  post: Post;
+};
+
+function PostsCard({
+  by,
+  post: { id, title, keywords, text, description },
+}: Props) {
   const { classes, theme } = useStyles();
   const { data } = useSession();
   const { mutate } = trpc.post.likePost.useMutation();
@@ -72,7 +80,7 @@ function PostsCard({ id, title, keywords, text, description }: Post) {
       <Card.Section className={classes.section} mt="md">
         <Group position="apart">
           <Text fz="lg" fw={500}>
-            {title}
+            {title} {`${by ? `Author:  ${by}` : ""}`}
           </Text>
           <Badge
             size="sm"
@@ -95,6 +103,7 @@ function PostsCard({ id, title, keywords, text, description }: Post) {
         <Text my="xs" className={classes.label} c="dimmed">
           Keywords
         </Text>
+
         <Group spacing={7} mt={5}>
           {features}
         </Group>

@@ -8,8 +8,8 @@ import {
 
 export const subNavigation = [
   { name: "Profile", icon: IconUser, current: true },
-  { name: "Account", icon: IconSettings, current: false },
-  { name: "Notifications", href: "#", icon: IconBellPlus, current: false },
+  { name: "Posts", icon: IconSettings, current: false },
+  { name: "Liked Posts", href: "#", icon: IconBellPlus, current: false },
   { name: "Billing", icon: IconCreditCard, current: false },
   {
     name: "Integrations",

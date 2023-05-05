@@ -81,7 +81,7 @@ export const authOptions: NextAuthOptions = {
             data: {
               ...user,
               id: undefined,
-              username: randomUsername,
+              name: randomUsername,
             },
           });
         }

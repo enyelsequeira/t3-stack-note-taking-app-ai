@@ -17,7 +17,9 @@ const EditorPage = () => {
     <Layout>
       <div className="mt-10 grid grid-cols-4 px-5">
         {data?.map((dta) => {
-          return <PostsCard key={dta.id} {...dta} />;
+          return (
+            <PostsCard key={dta.id} by={dta.user.name as string} post={dta} />
+          );
         })}
       </div>
     </Layout>

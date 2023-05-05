@@ -1,19 +1,17 @@
 import { Tab } from "@headlessui/react";
-import PostsCard from "../PostCards";
 import { Text } from "@mantine/core";
+import PostsCard from "../PostCards";
 import { trpc } from "@/utils/trpc";
+import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 
-const PostPanel = () => {
+const LikedPanel = () => {
   const { data } = useSession();
-  // console.log({router})
-  const { data: userPost } = trpc.post.getByUserId.useQuery(
+  const { data: likedPosts } = trpc.post.getLikedPosts.useQuery(
     { userId: data?.user?.id as string },
     { enabled: !!data?.user?.id }
   );
-
-  console.log({ userPost });
-
+  console.log({ likedPosts });
   return (
     <Tab.Panel className={"grid grid-cols-2 gap-3 py-4 px-2"}>
       <Text
@@ -24,11 +22,13 @@ const PostPanel = () => {
         ta="center"
         fw={700}
       >
-        All your posts in one place
+        Liked post
       </Text>
-      {userPost?.length ? (
-        userPost.map((item, index) => {
-          return <PostsCard key={index} post={item} />;
+      {likedPosts?.length ? (
+        likedPosts.map((item, index) => {
+          return (
+            <PostsCard key={index} by={item.user.name as string} post={item} />
+          );
         })
       ) : (
         <Text
@@ -45,4 +45,4 @@ const PostPanel = () => {
   );
 };
 
-export default PostPanel;
+export default LikedPanel;

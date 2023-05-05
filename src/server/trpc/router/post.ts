@@ -20,7 +20,7 @@ export const post = router({
 
         user: {
           select: {
-            username: true,
+            name: true,
           },
         },
       },
@@ -176,5 +176,29 @@ export const post = router({
         },
       });
       return updatedPost;
+    }),
+
+  // GET Liked posts by user id
+  getLikedPosts: protectedProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { userId } = input;
+      const posts = await ctx.prisma.post.findMany({
+        where: {
+          likes: {
+            some: {
+              id: userId,
+            },
+          },
+        },
+        include: {
+          user: true,
+        },
+      });
+      return posts;
     }),
 });
