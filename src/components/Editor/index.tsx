@@ -11,7 +11,7 @@ import { lowlight } from "lowlight";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { ActionIcon, ScrollArea } from "@mantine/core";
 import { useRef } from "react";
-import { IconArrowUp } from "@tabler/icons";
+import { IconArrowUp } from "@tabler/icons-react";
 import Typography from "@tiptap/extension-typography";
 import Document from "@tiptap/extension-document";
 import Dropcursor from "@tiptap/extension-dropcursor";

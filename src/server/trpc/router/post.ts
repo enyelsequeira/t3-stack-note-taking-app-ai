@@ -178,27 +178,120 @@ export const post = router({
       return updatedPost;
     }),
 
-  // GET Liked posts by user id
-  getLikedPosts: protectedProcedure
+  toggleLikePost: protectedProcedure
     .input(
       z.object({
+        postId: z.string(),
         userId: z.string(),
       })
     )
-    .query(async ({ ctx, input }) => {
-      const { userId } = input;
-      const posts = await ctx.prisma.post.findMany({
+    .mutation(async ({ ctx, input }) => {
+      const { postId, userId } = input;
+
+      const post = await ctx.prisma.post.findUnique({
         where: {
+          id: postId,
+        },
+      });
+      if (!post) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Opps, seems like this post doesn't exist",
+          cause: new Error("Post not found"),
+        });
+      }
+      if (post.userId === userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Opps, seems like you are the owner of this post",
+          cause: new Error("Wrong user"),
+        });
+      }
+
+      const postIsLiked = await ctx.prisma.post.findUnique({
+        where: {
+          id: postId,
+        },
+        select: {
           likes: {
-            some: {
+            where: {
               id: userId,
             },
           },
         },
-        include: {
-          user: true,
+      });
+
+      // actual toggle is happening here, if the post is liked by the user, we disconnect it, if it is not liked by the user, we connect it
+      const updatedPost = await ctx.prisma.post.update({
+        where: {
+          id: postId,
+        },
+        data: {
+          likes: postIsLiked?.likes.length
+            ? {
+                disconnect: {
+                  id: userId,
+                },
+              }
+            : {
+                connect: {
+                  id: userId,
+                },
+              },
         },
       });
-      return posts;
+
+      return updatedPost;
+    }),
+
+  getLikedPosts: protectedProcedure.query(async ({ ctx }) => {
+    const { id: userId } = ctx.session.user;
+    if (!userId) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "Opps, seems like you are not logged in",
+      });
+    }
+
+    const posts = await ctx.prisma.post.findMany({
+      where: {
+        likes: {
+          some: {
+            id: userId,
+          },
+        },
+      },
+      include: {
+        user: true,
+      },
+    });
+    return posts;
+  }),
+  // we need to get who like the post and we need to get their username/name
+  getPeopleWhoLikedPost: publicProcedure
+    .input(
+      z.object({
+        postId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { postId } = input;
+      const post = await ctx.prisma.post.findUnique({
+        where: {
+          id: postId,
+        },
+        select: {
+          likes: {
+            include: {
+              likes: {
+                include: {
+                  user: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      return post?.likes;
     }),
 });

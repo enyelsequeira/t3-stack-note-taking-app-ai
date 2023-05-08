@@ -1,14 +1,15 @@
+import type {
+  MultiSelectProps,
+  MultiSelectValueProps} from "@mantine/core";
 import {
   Box,
   CloseButton,
   Group,
-  MultiSelectProps,
-  MultiSelectValueProps,
   Text,
   rem,
 } from "@mantine/core";
 import { MultiSelect } from "@mantine/core";
-import { IconHash } from "@tabler/icons";
+import { IconHash } from "@tabler/icons-react";
 import { forwardRef } from "react";
 import type { FieldValues, UseControllerProps } from "react-hook-form";
 import { useController } from "react-hook-form";

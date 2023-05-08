@@ -1,11 +1,11 @@
-import type { TablerIconProps } from "@tabler/icons";
+import type { TablerIconsProps } from "@tabler/icons-react";
 import {
   IconBrandFacebook,
   IconBrandGithub,
   IconBrandInstagram,
   IconBrandTwitter,
   IconBrandYoutube,
-} from "@tabler/icons";
+} from "@tabler/icons-react";
 
 const navigation = {
   main: [
@@ -20,27 +20,27 @@ const navigation = {
     {
       name: "Facebook",
       href: "#",
-      icon: (props: TablerIconProps) => <IconBrandFacebook {...props} />,
+      icon: (props: TablerIconsProps) => <IconBrandFacebook {...props} />,
     },
     {
       name: "Instagram",
       href: "#",
-      icon: (props: TablerIconProps) => <IconBrandInstagram {...props} />,
+      icon: (props: TablerIconsProps) => <IconBrandInstagram {...props} />,
     },
     {
       name: "Twitter",
       href: "#",
-      icon: (props: TablerIconProps) => <IconBrandTwitter {...props} />,
+      icon: (props: TablerIconsProps) => <IconBrandTwitter {...props} />,
     },
     {
       name: "GitHub",
       href: "#",
-      icon: (props: TablerIconProps) => <IconBrandGithub {...props} />,
+      icon: (props: TablerIconsProps) => <IconBrandGithub {...props} />,
     },
     {
       name: "YouTube",
       href: "#",
-      icon: (props: TablerIconProps) => <IconBrandYoutube {...props} />,
+      icon: (props: TablerIconsProps) => <IconBrandYoutube {...props} />,
     },
   ],
 };

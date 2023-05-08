@@ -12,7 +12,13 @@ import {
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import type { Post } from "@prisma/client";
-import { IconBookmark, IconHash, IconHeart, IconShare } from "@tabler/icons";
+import {
+  IconBookmark,
+  IconHash,
+  IconShare,
+  IconHeartFilled,
+  IconHeart,
+} from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
@@ -50,13 +56,15 @@ type Props = {
   post: Post;
 };
 
-function PostsCard({
-  by,
-  post: { id, title, keywords, text, description },
-}: Props) {
+function PostsCard({ by, post: { id, title, keywords, description } }: Props) {
   const { classes, theme } = useStyles();
   const { data } = useSession();
-  const { mutate } = trpc.post.likePost.useMutation();
+  const { post } = trpc.useContext();
+  const { data: whoLikedPost } = trpc.post.getPeopleWhoLikedPost.useQuery({
+    postId: id,
+  });
+
+  const { mutate } = trpc.post.toggleLikePost.useMutation();
   const features = keywords.map((keyword, i) => (
     <Badge
       color={theme.colorScheme === "dark" ? "dark" : "gray"}
@@ -66,7 +74,10 @@ function PostsCard({
       {keyword}
     </Badge>
   ));
+  const { data: likedPosts } = trpc.post.getLikedPosts.useQuery();
 
+  const isPostLiked = likedPosts?.some((item) => item.id === id);
+  console.log({ whoLikedPost });
   return (
     <Card withBorder radius="md" p="xs" className={classes.card}>
       <Card.Section>
@@ -112,8 +123,16 @@ function PostsCard({
       <Card.Section className={classes.footer}>
         <Group position="apart">
           <Text fz="xs" c="dimmed">
-            THEY LIKED 888
+            Liked by:
+            {whoLikedPost &&  whoLikedPost?.length === 0
+              ? "No one"
+              : whoLikedPost?.length === 1
+              ? whoLikedPost?.[0]?.name
+              : `${whoLikedPost?.[0]?.name} and ${
+                  whoLikedPost?.length - 1
+                } other${whoLikedPost?.length > 2 ? "s" : ""}`}
           </Text>
+
           <Group spacing={0}>
             <ActionIcon
               onClick={() => {
@@ -124,16 +143,24 @@ function PostsCard({
                   },
                   {
                     onSuccess() {
-                      notifications.show({
-                        title: "Post liked",
-                        message: "Post liked successfully",
-                      });
+                      if (isPostLiked) {
+                        notifications.show({
+                          title: "Post unliked",
+                          message: "Post unliked successfully",
+                        });
+                      } else {
+                        notifications.show({
+                          title: "Post liked",
+                          message: "Post liked successfully",
+                        });
+                      }
+                      post.invalidate();
                     },
                     onError(error) {
                       console.log({ error });
                       notifications.show({
                         title: "Error",
-                        message: "Error while liking post",
+                        message: error.message,
                         color: "red",
                       });
                     },
@@ -141,12 +168,17 @@ function PostsCard({
                 );
               }}
             >
-              <IconHeart
-                size="1.2rem"
-                color={theme.colors.red[6]}
-                stroke={1.5}
-              />
+              {isPostLiked ? (
+                <IconHeartFilled
+                  className={"text-red-600"}
+                  size="1.2rem"
+                  stroke={1.5}
+                />
+              ) : (
+                <IconHeart size="1.2rem" stroke={1.5} />
+              )}
             </ActionIcon>
+
             <ActionIcon>
               <IconBookmark
                 size="1.2rem"

@@ -1,5 +1,5 @@
 import { Dialog } from "@headlessui/react";
-import { IconX } from "@tabler/icons";
+import { IconX } from "@tabler/icons-react";
 import { navigation } from "./header";
 import Image from "next/image";
 import Link from "next/link";

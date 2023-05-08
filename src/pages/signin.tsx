@@ -4,7 +4,7 @@ import {
   IconBrandDiscord,
   IconBrandFacebook,
   IconBrandGithub,
-} from "@tabler/icons";
+} from "@tabler/icons-react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { unstable_getServerSession } from "next-auth";

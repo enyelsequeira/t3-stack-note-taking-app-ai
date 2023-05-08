@@ -4,7 +4,7 @@ import {
   IconSettings,
   IconTriangleSquareCircle,
   IconUser,
-} from "@tabler/icons";
+} from "@tabler/icons-react";
 
 export const subNavigation = [
   { name: "Profile", icon: IconUser, current: true },

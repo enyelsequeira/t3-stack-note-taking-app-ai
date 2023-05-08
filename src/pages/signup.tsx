@@ -4,7 +4,7 @@ import {
   IconBrandDiscord,
   IconBrandFacebook,
   IconBrandGithub,
-} from "@tabler/icons";
+} from "@tabler/icons-react";
 import { signIn, useSession } from "next-auth/react";
 import useZodForm from "@/hooks/use-zod-form";
 import type { CreateUserType } from "@/schemas/validations";

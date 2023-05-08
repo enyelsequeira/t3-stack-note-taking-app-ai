@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 import { Fragment } from "react";
 import { Listbox, Transition } from "@headlessui/react";
-import { IconCheck, IconChevronDown } from "@tabler/icons";
+import { IconCheck, IconChevronDown } from "@tabler/icons-react";
 
 type Props = {
   onChange: (e: string) => void;

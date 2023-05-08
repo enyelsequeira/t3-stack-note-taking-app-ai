@@ -1,4 +1,4 @@
-import { IconInbox, IconStars } from "@tabler/icons";
+import { IconInbox, IconStars } from "@tabler/icons-react";
 import Box from "./Global/Box/Box";
 
 const Features = () => {

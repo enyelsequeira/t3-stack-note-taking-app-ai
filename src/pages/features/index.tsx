@@ -3,7 +3,7 @@ import Layout from "@/layout";
 import type { SubmitHandler } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import { Button } from "@mantine/core";
-import { IconError404, IconHash } from "@tabler/icons";
+import { IconError404, IconHash } from "@tabler/icons-react";
 import { useState } from "react";
 import { trpc } from "@/utils/trpc";
 import { notifications } from "@mantine/notifications";

@@ -12,7 +12,7 @@ import Editor from "@/components/Editor";
 import { Controller } from "react-hook-form";
 import { TRPCClientError } from "@trpc/client";
 import { notifications } from "@mantine/notifications";
-import { IconError404 } from "@tabler/icons";
+import { IconError404 } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import clsx from "clsx";
 import { OwnTextArea } from "@/components/Form/TextArea";

@@ -1,4 +1,4 @@
-import { Icon360, IconArrowRight } from "@tabler/icons";
+import { Icon360, IconArrowRight } from "@tabler/icons-react";
 import Box from "../Global/Box/Box";
 import { Button } from "../Global/Button/Button";
 import Text from "../Global/Text/Text";

@@ -7,10 +7,7 @@ import { useSession } from "next-auth/react";
 
 const LikedPanel = () => {
   const { data } = useSession();
-  const { data: likedPosts } = trpc.post.getLikedPosts.useQuery(
-    { userId: data?.user?.id as string },
-    { enabled: !!data?.user?.id }
-  );
+  const { data: likedPosts } = trpc.post.getLikedPosts.useQuery();
   console.log({ likedPosts });
   return (
     <Tab.Panel className={"grid grid-cols-2 gap-3 py-4 px-2"}>

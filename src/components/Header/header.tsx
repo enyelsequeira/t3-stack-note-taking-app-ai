@@ -1,4 +1,4 @@
-import { IconMenu } from "@tabler/icons";
+import { IconMenu } from "@tabler/icons-react";
 import { useState } from "react";
 import MobileHeader from "./mobile-header";
 import Image from "next/image";
