@@ -21,6 +21,8 @@ export const post = router({
         user: {
           select: {
             name: true,
+            id: true,
+            username: true,
           },
         },
       },
@@ -59,21 +61,21 @@ export const post = router({
       return newPost;
     }),
   // get post/Note by their userId
-  getByUserId: publicProcedure
-    .input(
-      z.object({
-        userId: z.string(),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      const { userId } = input;
-      const posts = await ctx.prisma.post.findMany({
-        where: {
-          userId,
-        },
+  getByUserId: protectedProcedure.query(async ({ ctx }) => {
+    const { session } = ctx;
+    if (!session?.user)
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "You must be logged in to see posts",
+        cause: new Error("You must be logged in to see posts"),
       });
-      return posts;
-    }),
+    const posts = await ctx.prisma.post.findMany({
+      where: {
+        userId: session?.user?.id,
+      },
+    });
+    return posts;
+  }),
 
   // get by post id
   getByPostId: publicProcedure
@@ -203,8 +205,8 @@ export const post = router({
       if (post.userId === userId) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: "Opps, seems like you are the owner of this post",
-          cause: new Error("Wrong user"),
+          message: "Oops, you cannot like your own post",
+          cause: new Error("Liking own post"),
         });
       }
 

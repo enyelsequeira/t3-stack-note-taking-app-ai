@@ -21,6 +21,7 @@ import {
 } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { match } from "ts-pattern";
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -56,7 +57,10 @@ type Props = {
   post: Post;
 };
 
-function PostsCard({ by, post: { id, title, keywords, description } }: Props) {
+function PostsCard({
+  by,
+  post: { id, title, keywords, description, userId },
+}: Props) {
   const { classes, theme } = useStyles();
   const { data } = useSession();
   const { post } = trpc.useContext();
@@ -64,7 +68,12 @@ function PostsCard({ by, post: { id, title, keywords, description } }: Props) {
     postId: id,
   });
 
+  console.log({ by });
+  const PostBelongsToUser = data?.user?.id === userId;
+
   const { mutate } = trpc.post.toggleLikePost.useMutation();
+  const whoLikedPostLength = whoLikedPost?.length || 0;
+
   const features = keywords.map((keyword, i) => (
     <Badge
       color={theme.colorScheme === "dark" ? "dark" : "gray"}
@@ -77,7 +86,7 @@ function PostsCard({ by, post: { id, title, keywords, description } }: Props) {
   const { data: likedPosts } = trpc.post.getLikedPosts.useQuery();
 
   const isPostLiked = likedPosts?.some((item) => item.id === id);
-  console.log({ whoLikedPost });
+  console.log({ PostBelongsToUser });
   return (
     <Card withBorder radius="md" p="xs" className={classes.card}>
       <Card.Section>
@@ -93,17 +102,19 @@ function PostsCard({ by, post: { id, title, keywords, description } }: Props) {
           <Text fz="lg" fw={500}>
             {title} {`${by ? `Author:  ${by}` : ""}`}
           </Text>
-          <Badge
-            size="sm"
-            className="cursor-pointer"
-            component={Link}
-            href={{
-              pathname: `/posts/post/${id}`,
-              query: { edit: true },
-            }}
-          >
-            Edit
-          </Badge>
+          {PostBelongsToUser ? (
+            <Badge
+              size="sm"
+              className="cursor-pointer"
+              component={Link}
+              href={{
+                pathname: `/posts/post/${id}`,
+                query: { edit: true },
+              }}
+            >
+              Edit
+            </Badge>
+          ) : null}
         </Group>
         <Text fz="sm" mt="xs" lineClamp={4}>
           {description}
@@ -123,14 +134,41 @@ function PostsCard({ by, post: { id, title, keywords, description } }: Props) {
       <Card.Section className={classes.footer}>
         <Group position="apart">
           <Text fz="xs" c="dimmed">
-            Liked by:
-            {whoLikedPost &&  whoLikedPost?.length === 0
-              ? "No one"
-              : whoLikedPost?.length === 1
-              ? whoLikedPost?.[0]?.name
-              : `${whoLikedPost?.[0]?.name} and ${
-                  whoLikedPost?.length - 1
-                } other${whoLikedPost?.length > 2 ? "s" : ""}`}
+            Liked by:{" "}
+            {match(whoLikedPostLength)
+              .when(
+                (x) => x === 0,
+                () => <> No one liked this post yet</>
+              )
+              .when(
+                (x) => x === 1,
+                () => (
+                  <>
+                    {whoLikedPost?.[0]?.name || whoLikedPost?.[0]?.username}{" "}
+                    liked this post
+                  </>
+                )
+              )
+              .when(
+                (x) => x === 2,
+                () => (
+                  <>
+                    {whoLikedPost?.[0]?.name || whoLikedPost?.[0]?.username} and{" "}
+                    {whoLikedPost?.[1]?.name || whoLikedPost?.[0]?.username}{" "}
+                    liked this post
+                  </>
+                )
+              )
+              .when(
+                (x) => x > 2,
+                () => (
+                  <>
+                    {whoLikedPost?.[0]?.name || whoLikedPost?.[0]?.username} and{" "}
+                    {whoLikedPostLength - 1} others liked this post
+                  </>
+                )
+              )
+              .run()}
           </Text>
 
           <Group spacing={0}>
